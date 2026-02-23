@@ -1,23 +1,4 @@
-.profile-form {
-    width: min(680px, 100%);
-    margin: 0 auto;
-    font-size: 24px;
-}
-
-.profile-form .form-title {
-    font-size: 36px;
-}
-
-.profile-edit-form .form-label {
-    font-size: 24px;
-    font-weight: 700;
-}
-
-.profile-edit-form .form-control {
-    width: min(680px, 100%);
-    height: 45px;
-    font-size: 24px;
-}
+/* フォーム幅・見出し・入力の基準サイズは common.css の .form-layout-680で定義 */
 
 .profile-image-row {
     display: flex;
@@ -46,7 +27,6 @@
 
 .profile-edit-form > .button {
     margin-top: 50px;
-    width: min(680px, 100%);
     height: 60px;
     font-size: 26px;
 }
@@ -59,23 +39,6 @@
 }
 
 @media (max-width: 900px) {
-    .profile-form {
-        font-size: 18px;
-    }
-
-    .profile-form .form-title {
-        font-size: 30px;
-    }
-
-    .profile-edit-form .form-label {
-        font-size: 20px;
-    }
-
-    .profile-edit-form .form-control {
-        height: 42px;
-        font-size: 18px;
-    }
-
     .profile-image-display {
         width: 120px;
         height: 120px;

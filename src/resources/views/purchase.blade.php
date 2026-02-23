@@ -53,7 +53,7 @@
                     @else
                         <p class="purchase-address">住所が未登録です。</p>
                     @endif
-                    @error('shipping_address')<p class="field-error">{{ $message }}</p>@enderror
+                    @error('shipping_address')<p class="field-error purchase-address-error">{{ $message }}</p>@enderror
                 </section>
             </div>
 

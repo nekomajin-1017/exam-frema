@@ -157,6 +157,23 @@
     font-size: 14px;
 }
 
+.form-layout-680 {
+    width: min(680px, 100%);
+    margin: 0 auto;
+    font-size: 24px;
+}
+
+.form-layout-680 .form-label {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.form-layout-680 .form-control {
+    width: min(680px, 100%);
+    height: 45px;
+    font-size: 24px;
+}
+
 .form-control--textarea {
     height: auto;
     min-height: 120px;
@@ -288,6 +305,24 @@ select.form-control::-ms-expand {
 
     .form-label {
         font-size: 20px;
+    }
+
+    .form-layout-680 {
+        font-size: 18px;
+    }
+
+    .form-layout-680 .form-title,
+    .form-layout-680 .section-title--h1 {
+        font-size: 30px;
+    }
+
+    .form-layout-680 .form-label {
+        font-size: 20px;
+    }
+
+    .form-layout-680 .form-control {
+        height: 42px;
+        font-size: 18px;
     }
 
     .button {

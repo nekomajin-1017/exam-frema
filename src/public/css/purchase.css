@@ -96,6 +96,10 @@
     font-weight: 700;
 }
 
+.purchase-address-error {
+    margin-left: 40px;
+}
+
 .purchase-form-group {
     max-width: 320px;
 }
@@ -208,6 +212,10 @@
     }
 
     .purchase-address {
+        margin-left: 0;
+    }
+
+    .purchase-address-error {
         margin-left: 0;
     }
 

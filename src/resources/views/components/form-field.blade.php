@@ -3,7 +3,6 @@
     'label' => '',
     'type' => 'text',
     'value' => null,
-    'placeholder' => '',
     'useOld' => true,
 ])
 
@@ -23,7 +22,6 @@
         class="form-control"
         name="{{ $name }}"
         type="{{ $type }}"
-        placeholder="{{ $placeholder }}"
         @if(! is_null($fieldValue) && $type !== 'password')
             value="{{ $fieldValue }}"
         @endif
