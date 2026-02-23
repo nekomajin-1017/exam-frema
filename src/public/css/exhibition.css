@@ -1,0 +1,186 @@
+.sell-layout {
+    width: min(680px, 100%);
+    margin: 0 auto;
+    font-size: 24px;
+}
+
+.sell-layout .form-group {
+    gap: 0;
+}
+
+.sell-layout .form-label {
+    display: block;
+    font-weight: 700;
+    margin: 0 0 8px;
+    font-size: 24px;
+}
+
+.category-group {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.sell-layout .section-title {
+    text-align: center;
+    font-size: 36px;
+}
+
+.sell-image-box {
+    border: 2px dashed var(--gray-200);
+    border-radius: 8px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-600);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sell-image-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 165px;
+    height: 45px;
+    padding: 0;
+    border: 1px solid var(--red);
+    border-radius: 3px;
+    color: var(--red);
+    background: var(--white);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.sell-image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.sell-detail-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--gray-600);
+    margin: 8px 0 18px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 10px;
+}
+
+.category-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.category-tag-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.category-tag-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--red);
+    color: var(--red);
+    font-size: 15px;
+    line-height: 1;
+    background: var(--white);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.category-tag-input:checked+.category-tag-label {
+    background: var(--red);
+    color: var(--white);
+}
+
+.price-input {
+    position: relative;
+}
+
+.price-input-currency {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-600);
+    font-size: 24px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.price-input-field {
+    padding-left: 36px;
+}
+
+.sell-layout form>.button {
+    margin-top: 12px;
+}
+
+.sell-layout .form-control {
+    width: min(680px, 100%);
+    height: 45px;
+    font-size: 24px;
+}
+
+.sell-layout select.form-control {
+    padding: 0 34px 0 12px;
+    line-height: 1.2;
+    box-sizing: border-box;
+}
+
+.sell-layout .form-control--textarea {
+    width: min(680px, 100%);
+    height: 100px;
+    min-height: 100px;
+}
+
+@media (max-width: 900px) {
+    .sell-layout {
+        font-size: 18px;
+    }
+
+    .sell-layout .section-title {
+        font-size: 30px;
+    }
+
+    .sell-layout .form-label {
+        font-size: 20px;
+    }
+
+    .sell-detail-title {
+        font-size: 24px;
+    }
+
+    .price-input-currency {
+        font-size: 20px;
+    }
+
+    .sell-layout .form-control {
+        height: 42px;
+        font-size: 18px;
+    }
+
+    .sell-layout .form-control--textarea {
+        height: 90px;
+        min-height: 90px;
+    }
+
+    .sell-layout form > .button {
+        font-size: 22px;
+    }
+}

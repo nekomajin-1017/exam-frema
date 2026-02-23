@@ -12,7 +12,8 @@
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "livewire/livewire": "^2.12"
+        "livewire/livewire": "^2.12",
+        "stripe/stripe-php": "^19.3"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -52,7 +53,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/sanctum"
+            ]
         }
     },
     "config": {

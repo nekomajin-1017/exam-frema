@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Http\Livewire;
+
+use Livewire\Component;
+
+class PaymentSelector extends Component
+{
+    public $paymentMethods = [];
+    public $selectedPaymentMethodId = '';
+
+    public function mount($paymentMethods, $oldPaymentMethodId = null): void
+    {
+        $this->paymentMethods = collect($paymentMethods)
+            ->map(function ($method) {
+                if (is_array($method)) {
+                    return [
+                        'id' => (int) ($method['id'] ?? 0),
+                        'name' => (string) ($method['name'] ?? ''),
+                    ];
+                }
+
+                return [
+                    'id' => (int) $method->id,
+                    'name' => (string) $method->name,
+                ];
+            })
+            ->values()
+            ->all();
+
+        $this->selectedPaymentMethodId = filled($oldPaymentMethodId) ? (string) $oldPaymentMethodId : '';
+    }
+
+    public function updatedSelectedPaymentMethodId(): void
+    {
+        $this->emit('paymentMethodUpdated', $this->selectedPaymentMethodName);
+    }
+
+    public function getSelectedPaymentMethodNameProperty(): string
+    {
+        if ($this->selectedPaymentMethodId === '') {
+            return '';
+        }
+
+        $selected = collect($this->paymentMethods)->firstWhere('id', (int) $this->selectedPaymentMethodId);
+
+        return $selected ? (string) $selected['name'] : '';
+    }
+
+    public function render()
+    {
+        return view('livewire.payment-selector');
+    }
+}

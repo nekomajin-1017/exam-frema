@@ -1,0 +1,79 @@
+.address-page {
+    min-height: calc(100vh - 180px);
+    display: flex;
+    align-items: center;
+}
+
+.address-page > .purchase-card {
+    transform: translateY(-80px);
+}
+
+.purchase-card {
+    width: min(680px, 100%);
+    margin: 0 auto;
+    padding: 8px 0;
+    font-size: 24px;
+}
+
+.purchase-card .section-title {
+    margin-bottom: 28px;
+    text-align: center;
+    font-size: 36px;
+}
+
+.purchase-address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.purchase-address-form .button {
+    margin-top: 24px;
+    width: min(680px, 100%);
+    height: 60px;
+    font-size: 26px;
+}
+
+.purchase-address-form .form-label {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.purchase-address-form .form-control {
+    width: min(680px, 100%);
+    height: 45px;
+    font-size: 24px;
+}
+
+@media (max-width: 900px) {
+    .address-page {
+        min-height: auto;
+        align-items: flex-start;
+    }
+
+    .address-page > .purchase-card {
+        transform: none;
+    }
+
+    .purchase-card {
+        font-size: 18px;
+    }
+
+    .purchase-card .section-title {
+        font-size: 30px;
+    }
+
+    .purchase-address-form .form-label {
+        font-size: 20px;
+    }
+
+    .purchase-address-form .form-control {
+        height: 42px;
+        font-size: 18px;
+    }
+
+    .purchase-address-form .button {
+        height: 52px;
+        font-size: 22px;
+    }
+}
