@@ -43,7 +43,7 @@ MAIL_PORT=1025
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS="noreply@example.com"
+MAIL_FROM_ADDRESS="app@example.com"
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 6. アプリケーションキーの作成
@@ -52,7 +52,7 @@ php artisan key:generate
 ```
 7. マイグレーション・シーディングの実行
 ```bash
-php artisan migrate:fresh --seed
+php artisan migrate --seed
 ```
 8. 画像保存用のシンボリックリンク作成
 ```bash
@@ -84,6 +84,7 @@ php artisan storage:link
 
 - 出品者: `seller@example.com` / `password`
 - 購入者: `buyer@example.com` / `password`
+※ 初回ログイン時、「認証メールを再送する」ボタンを押してください。
 
 ## テスト
 
