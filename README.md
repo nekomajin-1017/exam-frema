@@ -84,7 +84,7 @@ php artisan storage:link
 
 - 出品者: `seller@example.com` / `password`
 - 購入者: `buyer@example.com` / `password`
-※ 初回ログイン時、「認証メールを再送する」ボタンを押してください。
+<br>※ 初回ログイン時、「認証メールを再送する」ボタンを押してください。
 
 ## テスト
 
