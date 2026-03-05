@@ -8,8 +8,7 @@
 
 @php
     $fieldValue = $useOld ? old($name, $value) : $value;
-    $errorBag = $errors ?? null;
-    $errorMessage = $errorBag ? $errorBag->first($name) : null;
+    $errorMessage = $errors->first($name);
 @endphp
 
 <div class="form-group">

@@ -7,11 +7,11 @@
 @section('main')
     <div class="profile-header">
         <div class="profile-avatar">
-            @if ($user && $user->profile && $user->profile->image_path)
-                <img class="profile-avatar-img img-fluid" src="{{ asset('storage/' . $user->profile->image_path) }}" alt="{{ $user->name ?? 'プロフィール画像' }}">
+            @if ($user->profile && $user->profile->image_path)
+                <img class="profile-avatar-img img-fluid" src="{{ asset('storage/' . $user->profile->image_path) }}" alt="{{ $user->name }}">
             @endif
         </div>
-        <h1 class="section-title section-title--h1 profile-name">{{ $user->name ?? 'ゲスト' }}</h1>
+        <h1 class="section-title section-title--h1 profile-name">{{ $user->name }}</h1>
         <div class="profile-actions">
             <a class="button button-outline link-reset" href="{{ route('mypage.profile') }}">プロフィールを編集</a>
         </div>

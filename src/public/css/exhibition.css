@@ -27,13 +27,13 @@
 }
 
 .sell-image-box {
-    border: 2px dashed var(--gray-200);
+    border: 2px dashed var(--slight-gray);
     border-radius: 8px;
     height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--gray-600);
+    color: var(--dark-gray);
     margin-bottom: 20px;
     position: relative;
     overflow: hidden;
@@ -64,10 +64,10 @@
 .sell-detail-title {
     font-size: 30px;
     font-weight: 700;
-    color: var(--gray-600);
+    color: var(--dark-gray);
     margin: 8px 0 18px;
     padding-bottom: 6px;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--slight-gray);
 }
 
 .category-tags {
@@ -117,7 +117,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--gray-600);
+    color: var(--dark-gray);
     font-size: 24px;
     z-index: 1;
     pointer-events: none;

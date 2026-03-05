@@ -7,11 +7,7 @@
     @forelse ($items as $item)
         @php
             $imagePath = $item->image_path ?? null;
-            $imageUrl = $imagePath
-                ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])
-                    ? $imagePath
-                    : asset('storage/' . $imagePath))
-                : null;
+            $imageUrl = $imagePath ? asset('storage/' . $imagePath) : null;
         @endphp
 
         <a class="card link-reset" href="{{ route('item.show', $item) }}">

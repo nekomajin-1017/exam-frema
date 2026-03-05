@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Item;
+use App\Models\Payment;
 use App\Models\Profile;
 
 class OrderService
@@ -37,5 +38,29 @@ class OrderService
         ]);
 
         $item->update(['is_sold' => true]);
+    }
+
+    public function cancelPendingKonbiniOrderForItem(int $buyerId, int $itemId, CheckoutService $checkout): void
+    {
+        $order = Order::where('buyer_id', $buyerId)
+            ->where('item_id', $itemId)
+            ->whereHas('paymentMethod', function ($query) {
+                $query->where('stripe_method_type', Payment::TYPE_KONBINI);
+            })
+            ->latest('id')
+            ->first();
+
+        if (!$order) {
+            return;
+        }
+
+        $sessionId = (string) ($order->checkout_session_id ?? '');
+        if ($sessionId !== '' && $checkout->isSessionPaid($sessionId)) {
+            return;
+        }
+
+        $order->delete();
+
+        Item::whereKey($itemId)->update(['is_sold' => false]);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\Requests\LoginRequest as AppLoginRequest;
 use App\Actions\Fortify\CreateNewUser;
-use App\Actions\Fortify\ValidateLoginRequest;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,6 +17,7 @@ use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Contracts\VerifyEmailResponse;
+use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(FortifyLoginRequest::class, AppLoginRequest::class);
     }
 
     /**
@@ -48,7 +50,6 @@ class FortifyServiceProvider extends ServiceProvider
             return array_filter([
                 config('fortify.limiters.login') ? null : EnsureLoginIsNotThrottled::class,
                 config('fortify.lowercase_usernames') ? CanonicalizeUsername::class : null,
-                ValidateLoginRequest::class,
                 AttemptToAuthenticate::class,
                 PrepareAuthenticatedSession::class,
             ]);
@@ -70,7 +71,7 @@ class FortifyServiceProvider extends ServiceProvider
                 public function toResponse($request)
                 {
                     $user = $request->user();
-                    if ($user && method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail()) {
+                    if ($user && !$user->hasVerifiedEmail()) {
                         return redirect()->route('verification.notice');
                     }
 

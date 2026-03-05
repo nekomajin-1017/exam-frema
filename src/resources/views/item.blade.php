@@ -8,12 +8,7 @@
     <div class="item-layout">
         <div class="item-image">
             @if ($item->image_path)
-                @php
-                    $imageUrl = \Illuminate\Support\Str::startsWith($item->image_path, ['http://', 'https://'])
-                        ? $item->image_path
-                    : asset('storage/' . $item->image_path);
-                @endphp
-                <img class="item-image-img img-fluid" src="{{ $imageUrl }}" alt="{{ $item->name }}">
+                <img class="item-image-img img-fluid" src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
             @endif
             @if ($item->is_sold)
                 <p class="badge sold-badge">Sold</p>
@@ -86,11 +81,7 @@
                     @forelse ($item->comments as $comment)
                         @php
                             $profileImage = $comment->user?->profile?->image_path ?? null;
-                            $commentImageUrl = $profileImage
-                                ? (\Illuminate\Support\Str::startsWith($profileImage, ['http://', 'https://'])
-                                        ? $profileImage
-                                        : asset('storage/' . $profileImage))
-                                : null;
+                            $commentImageUrl = $profileImage ? asset('storage/' . $profileImage) : null;
                         @endphp
                         <div class="comment-item">
                             <div class="comment-user">

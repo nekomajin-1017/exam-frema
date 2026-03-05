@@ -34,7 +34,7 @@
     width: 180px;
     height: 180px;
     border-radius: 6px;
-    background: var(--gray-200);
+    background: var(--slight-gray);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -64,7 +64,7 @@
 
 .purchase-divider {
     height: 1px;
-    background: var(--gray-200);
+    background: var(--slight-gray);
 }
 
 .purchase-section {
@@ -136,7 +136,7 @@
 
 .purchase-summary-box {
     padding: 0;
-    border: 1px solid var(--gray-400);
+    border: 1px solid var(--gray);
     border-radius: 3px;
 }
 
@@ -146,7 +146,7 @@
 }
 
 .purchase-summary-box .purchase-row + .purchase-row {
-    border-top: 1px solid var(--gray-400);
+    border-top: 1px solid var(--gray);
 }
 
 .purchase-summary-action {

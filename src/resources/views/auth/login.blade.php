@@ -7,10 +7,10 @@
 @section('main')
     <div class="form-card">
         <h1 class="form-title">ログイン</h1>
-    <form class="auth-form" action="{{ route('login') }}" method="post" novalidate>
+        <form class="auth-form" action="{{ route('login') }}" method="post" novalidate>
             @csrf
-        <x-form-field name="email" type="email" label="メールアドレス" />
-        <x-form-field name="password" type="password" label="パスワード" :use-old="false" />
+            <x-form-field name="email" type="email" label="メールアドレス" />
+            <x-form-field name="password" type="password" label="パスワード" :use-old="false" />
             <div class="auth-actions">
                 <button class="button" type="submit">ログインする</button>
             </div>

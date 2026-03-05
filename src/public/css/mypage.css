@@ -13,7 +13,7 @@
     min-height: 150px;
     flex: 0 0 150px;
     border-radius: 50%;
-    background: var(--gray-200);
+    background: var(--slight-gray);
     overflow: hidden;
     display: grid;
     place-items: center;
@@ -63,12 +63,12 @@
     left: 50%;
     bottom: 0;
     width: 100vw;
-    border-bottom: 1px solid var(--gray-400);
+    border-bottom: 1px solid var(--gray);
     transform: translateX(-50%);
 }
 
 .tab-link {
-    color: var(--gray-600);
+    color: var(--dark-gray);
     font-weight: 700;
     padding: 8px 0;
 }
@@ -86,7 +86,7 @@
 }
 
 .card {
-    background: var(--gray-100);
+    background: var(--white-gray);
     border-radius: 3px;
     padding: 2px 2px 0;
     width: 100%;
@@ -118,7 +118,7 @@
 .card-image {
     position: relative;
     overflow: hidden;
-    background: var(--gray-200);
+    background: var(--slight-gray);
     border-radius: 6px;
     aspect-ratio: 1 / 1;
     height: auto;

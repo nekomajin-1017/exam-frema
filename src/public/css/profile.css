@@ -10,7 +10,7 @@
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background: var(--gray-200);
+    background: var(--slight-gray);
     display: grid;
     place-items: center;
     overflow: hidden;

@@ -37,7 +37,7 @@
             </div>
             <div class="form-group">
                 <label class="form-label" for="sell-item-condition">商品の状態</label>
-                <select class="form-control" id="sell-item-condition" name="item_condition" required>
+                <select class="form-control form-control--select" id="sell-item-condition" name="item_condition" required>
                     <option value="" disabled hidden {{ old('item_condition') ? '' : 'selected' }}>選択してください</option>
                     @foreach ($conditions as $condition)
                         <option value="{{ $condition }}" {{ old('item_condition') === $condition ? 'selected' : '' }}>

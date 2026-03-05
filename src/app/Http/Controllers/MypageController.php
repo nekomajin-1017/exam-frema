@@ -11,33 +11,31 @@ use Illuminate\Support\Facades\Auth;
 
 class MypageController extends Controller
 {
-    public function mypage(Request $request)
+    public function showMyPage(Request $request)
     {
         $page = $request->query('page');
         $user = Auth::user();
-        $sellItems = collect();
-        $buyOrders = collect();
-
-        if ($user) {
-            $user->load('profile');
-            if ($page === 'sell') {
-                $sellItems = Item::where('user_id', $user->id)->latest()->get();
-            } else {
-                $buyOrders = Order::with('item')->where('buyer_id', $user->id)->latest()->get();
-            }
+        $user->load('profile');
+        if ($page === 'sell') {
+            $sellItems = Item::where('user_id', $user->id)->latest()->get();
+            $buyOrders = collect();
+        } else {
+            $sellItems = collect();
+            $buyOrders = Order::with('item')->where('buyer_id', $user->id)->latest()->get();
         }
 
         return view('mypage', compact('page', 'user', 'sellItems', 'buyOrders'));
     }
 
-    public function mypageProfile()
+    public function showMyPageProfile()
     {
         $user = Auth::user();
-        $profile = $user ? $user->profile : null;
+        $profile = $user->profile;
+
         return view('profile', compact('user', 'profile'));
     }
 
-    public function mypageProfileStore(ProfileRequest $request, ProfileService $profiles)
+    public function updateMyPageProfile(ProfileRequest $request, ProfileService $profiles)
     {
         $user = Auth::user();
 

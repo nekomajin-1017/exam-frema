@@ -13,13 +13,6 @@ class PaymentSelector extends Component
     {
         $this->paymentMethods = collect($paymentMethods)
             ->map(function ($method) {
-                if (is_array($method)) {
-                    return [
-                        'id' => (int) ($method['id'] ?? 0),
-                        'name' => (string) ($method['name'] ?? ''),
-                    ];
-                }
-
                 return [
                     'id' => (int) $method->id,
                     'name' => (string) $method->name,

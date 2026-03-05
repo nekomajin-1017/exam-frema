@@ -17,12 +17,7 @@
                 <div class="purchase-item">
                     <div class="purchase-thumb">
                         @if ($item->image_path)
-                            @php
-                                $imageUrl = \Illuminate\Support\Str::startsWith($item->image_path, ['http://', 'https://'])
-                                    ? $item->image_path
-                                    : asset('storage/' . $item->image_path);
-                            @endphp
-                            <img class="purchase-thumb-img img-fluid" src="{{ $imageUrl }}" alt="{{ $item->name }}">
+                            <img class="purchase-thumb-img img-fluid" src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
                         @endif
                     </div>
                     <div class="purchase-item-meta">

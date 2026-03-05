@@ -18,13 +18,13 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'テストアカウント(出品者)',
             'email' => 'seller@example.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('Coachtech777'),
         ]);
 
         User::create([
             'name' => 'テストアカウント(購入者)',
             'email' => 'buyer@example.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('Coachtech777'),
         ]);
 
         $this->call([

@@ -10,7 +10,7 @@ use App\Models\Item;
 
 class ItemController extends Controller
 {
-    public function index(Request $request)
+    public function showIndex(Request $request)
     {
         $tab = $request->query('tab');
         $keyword = trim((string) $request->query('keyword', ''));
@@ -20,12 +20,15 @@ class ItemController extends Controller
             ->withCount(['favorites', 'comments', 'orders']);
 
         if ($tab === 'mylist' && !Auth::check()) {
-            return redirect()->route('login');
+            $items = collect();
+
+            return view('index', compact('tab', 'items', 'keyword'));
         }
 
         if (Auth::check()) {
             $query->where('user_id', '!=', Auth::id());
         }
+
         if ($tab === 'mylist') {
             $query->whereHas('favorites', function ($q) {
                 $q->where('user_id', Auth::id());
@@ -41,7 +44,7 @@ class ItemController extends Controller
         return view('index', compact('tab', 'items', 'keyword'));
     }
 
-    public function item(Item $item)
+    public function showItemDetail(Item $item)
     {
         $item->load([
             'categories',
@@ -60,7 +63,7 @@ class ItemController extends Controller
         return view('item', compact('item', 'isFavorited'));
     }
 
-    public function commentStore(CommentRequest $request, Item $item)
+    public function storeComment(CommentRequest $request, Item $item)
     {
         $item->comments()->create([
             'user_id' => Auth::id(),
@@ -70,7 +73,7 @@ class ItemController extends Controller
         return redirect()->route('item.show', $item);
     }
 
-    public function favoriteToggle(Item $item)
+    public function toggleFavorite(Item $item)
     {
         $favorite = Favorite::where('user_id', Auth::id())
             ->where('item_id', $item->id)

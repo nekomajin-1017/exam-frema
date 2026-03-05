@@ -10,14 +10,15 @@ use Illuminate\Support\Facades\Auth;
 
 class ExhibitionController extends Controller
 {
-    public function sell()
+    public function showSellForm()
     {
         $categories = Category::orderBy('id')->get();
         $conditions = ItemConditions::ALL;
+
         return view('exhibition', compact('categories', 'conditions'));
     }
 
-    public function sellStore(ExhibitionRequest $request)
+    public function storeSellItem(ExhibitionRequest $request)
     {
         $path = $request->file('image')->store('items', 'public');
 

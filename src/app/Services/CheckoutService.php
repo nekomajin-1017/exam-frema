@@ -10,13 +10,9 @@ use Stripe\Stripe;
 
 class CheckoutService
 {
-    public function resolvePaymentSelection(): array
+    public function resolvePaymentSelection()
     {
-        $paymentMethods = Payment::orderBy('id')->get();
-        $defaultPaymentMethodId = Payment::where('stripe_method_type', Payment::TYPE_KONBINI)->value('id')
-            ?? $paymentMethods->first()?->id;
-
-        return [$paymentMethods, $defaultPaymentMethodId];
+        return Payment::orderBy('id')->get();
     }
 
     public function findPaymentMethod(int $paymentMethodId): ?Payment
@@ -27,6 +23,9 @@ class CheckoutService
     public function createSession(Item $item, int $buyerId, Payment $paymentMethod): StripeSession
     {
         Stripe::setApiKey((string) config('services.stripe.secret'));
+        $cancelUrl = $paymentMethod->stripe_method_type === Payment::TYPE_KONBINI
+            ? route('purchase.cancel', ['item_id' => $item->id])
+            : route('purchase.cancel');
 
         return StripeSession::create([
             'mode' => 'payment',
@@ -43,7 +42,7 @@ class CheckoutService
                 'quantity' => 1,
             ]],
             'success_url' => route('purchase.success') . '?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => route('purchase.cancel'),
+            'cancel_url' => $cancelUrl,
             'metadata' => [
                 'item_id' => $item->id,
                 'buyer_id' => $buyerId,
@@ -52,7 +51,12 @@ class CheckoutService
         ]);
     }
 
-    public function completeOrderBySessionId(string $sessionId, OrderService $orders, ProfileService $profiles): void
+    public function completeOrderBySessionId(
+        string $sessionId,
+        OrderService $orders,
+        ProfileService $profiles,
+        bool $forceCreateForKonbini = false
+    ): void
     {
         $stripeSecret = (string) config('services.stripe.secret');
         if ($stripeSecret === '') {
@@ -61,7 +65,7 @@ class CheckoutService
 
         Stripe::setApiKey($stripeSecret);
         $session = StripeSession::retrieve($sessionId);
-        if (($session->payment_status ?? null) !== 'paid') {
+        if (! $this->shouldCreateOrderForSession($session, $forceCreateForKonbini)) {
             return;
         }
 
@@ -79,6 +83,48 @@ class CheckoutService
         }
 
         $orders->createOrder($sessionId, $buyerId, $item, $this->resolvePaymentMethodId($session), $profile);
+    }
+
+    private function shouldCreateOrderForSession(StripeSession $session, bool $forceCreateForKonbini = false): bool
+    {
+        if ($forceCreateForKonbini && $this->isKonbiniSession($session)) {
+            return true;
+        }
+
+        if (($session->payment_status ?? null) === 'paid') {
+            return true;
+        }
+
+        if (! $this->isKonbiniSession($session)) {
+            return false;
+        }
+
+        return ($session->status ?? null) === 'complete';
+    }
+
+    public function isSessionPaid(string $sessionId): bool
+    {
+        $stripeSecret = (string) config('services.stripe.secret');
+        if ($stripeSecret === '') {
+            return false;
+        }
+
+        Stripe::setApiKey($stripeSecret);
+        $session = StripeSession::retrieve($sessionId);
+
+        return ($session->payment_status ?? null) === 'paid';
+    }
+
+    private function isKonbiniSession(StripeSession $session): bool
+    {
+        $paymentMethodId = (int) ($session->metadata['payment_method_id'] ?? 0);
+        if ($paymentMethodId) {
+            return Payment::whereKey($paymentMethodId)->value('stripe_method_type') === Payment::TYPE_KONBINI;
+        }
+
+        $paymentMethodTypes = (array) ($session->payment_method_types ?? []);
+
+        return in_array(Payment::TYPE_KONBINI, $paymentMethodTypes, true);
     }
 
     private function resolveBuyerId(StripeSession $session): int
