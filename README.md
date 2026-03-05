@@ -20,15 +20,19 @@
    2. `cd exam-frema`
 2. Docker Desktop を起動する
 3. コンテナを起動する
+
    `docker compose up -d --build`
 
 ### 2. Laravel 環境構築（通常実行用）
 
 1. PHP コンテナへ入る
+
    `docker compose exec php bash`
 2. 依存パッケージをインストールする
+
    `composer install`
 3. 環境変数ファイルを作成する
+
    `cp .env.example .env`
 4. `.env` に以下を追記して保存する
 
@@ -44,15 +48,19 @@ STRIPE_SECRET=sk_test_xxx（取得したキーを入力）
 ```
 
 5. アプリケーションキーを生成する
+
    `php artisan key:generate`
 6. テーブル作成とダミーデータを投入する
+
    `php artisan migrate --seed`
 7. 画像保存用のシンボリックリンクを作成する
+
    `php artisan storage:link`
 
 ### 3. テスト環境構築
 
 1. `.env.testing` を作成する
+
    `cp .env.example .env.testing`
 2. `.env.testing` に以下を追記して保存する（テスト実行用）
 
@@ -121,7 +129,8 @@ docker compose exec -T php vendor/bin/phpunit
 
 ## 補足
 
-- テストでは `CheckoutService` をモック化しているため、Stripe の API 呼び出しは行われません。<br>
+- テストでは `CheckoutService` をモック化しているため、Stripe の API 呼び出しは行われません。  
   そのため `STRIPE_KEY` / `STRIPE_SECRET` の設定は任意です。
-- コンビニ決済完了時は、Stripe の仕様上 `localhost` へ自動遷移しません。<br>
-  手動で `localhost`にアクセスしてください。
+
+- コンビニ決済完了時は、Stripe の仕様上 `localhost` へ自動遷移しません。  
+  手動で `localhost` にアクセスしてください。
