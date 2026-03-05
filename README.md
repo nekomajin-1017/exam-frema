@@ -77,7 +77,7 @@ STRIPE_SECRET=（任意）
 
 3. テスト用データベースを作成する
 
-```bash
+```text
 docker compose exec mysql bash
 mysql -u root -p
 CREATE DATABASE demo_test;
@@ -87,14 +87,14 @@ exit
 4. MySQL の入力が完了したら、セッションを終了する
 5. PHP コンテナへ再入場してテスト用の初期化を行う
 
-```bash
+```text
 docker compose exec php bash
 php artisan migrate --seed --env=testing
 ```
 
 ## テスト実行
 
-```bash
+```text
 docker compose exec -T php vendor/bin/phpunit
 ```
 
