@@ -108,6 +108,10 @@ docker compose exec -T php vendor/bin/phpunit
 - Laravel Fortify
 - Mailhog
 
+## テーブル仕様書
+
+![テーブル仕様書](tables.png)
+
 ## ER 図
 
 ![ER図](er.png)
