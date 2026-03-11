@@ -5,7 +5,6 @@
 ## 目次
 
 - [機能](#機能)
-- [クイックスタート](#クイックスタート)
 - [セットアップ詳細](#セットアップ詳細)
 - [テスト実行](#テスト実行)
 - [テスト時のDB設定ポリシー](#テスト時のdb設定ポリシー)
@@ -23,25 +22,6 @@
 - 商品購入（Stripe Checkout）
 - いいね・コメント
 - マイページ（購入一覧 / 出品一覧、プロフィール編集）
-
-## クイックスタート
-
-最短で起動する手順です。
-
-```bash
-git clone https://github.com/nekomajin-1017/exam-frema.git
-cd exam-frema
-docker compose up -d --build
-
-docker compose exec php bash
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-php artisan storage:link
-```
-
-`.env` のDB/Stripe値は、下記「通常実行環境」を参照して設定してください。
 
 ## セットアップ詳細
 
