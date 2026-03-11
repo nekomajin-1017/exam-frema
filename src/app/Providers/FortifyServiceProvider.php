@@ -24,16 +24,14 @@ class FortifyServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
-    {
+    public function register() {
         $this->app->bind(FortifyLoginRequest::class, AppLoginRequest::class);
     }
 
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
+    public function boot() {
         Fortify::loginView(function () {
             return view('auth.login');
         });
@@ -85,7 +83,7 @@ class FortifyServiceProvider extends ServiceProvider
             {
                 public function toResponse($request)
                 {
-                    return redirect('/mypage/profile');
+                    return redirect()->route('mypage.profile');
                 }
             };
         });

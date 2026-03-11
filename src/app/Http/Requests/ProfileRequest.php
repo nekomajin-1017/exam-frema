@@ -32,8 +32,7 @@ class ProfileRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
+    public function messages() {
         return [
             'image.image' => 'プロフィール画像は.jpeg/.jpg/.png形式でアップロードしてください',
             'image.mimes' => 'プロフィール画像は.jpeg/.jpg/.png形式でアップロードしてください',

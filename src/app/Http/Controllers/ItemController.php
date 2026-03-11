@@ -17,7 +17,7 @@ class ItemController extends Controller
         $keyword = $keyword !== '' ? $keyword : null;
 
         $query = Item::with(['categories'])
-            ->withCount(['favorites', 'comments', 'orders']);
+            ->withCount(['favorites', 'comments']);
 
         if ($tab === 'mylist' && !Auth::check()) {
             $items = collect();
@@ -54,7 +54,7 @@ class ItemController extends Controller
             },
             'comments.user.profile',
         ]);
-        $item->loadCount(['favorites', 'comments', 'orders']);
+        $item->loadCount(['favorites', 'comments']);
 
         $isFavorited = Auth::check()
             ? Favorite::where('user_id', Auth::id())->where('item_id', $item->id)->exists()

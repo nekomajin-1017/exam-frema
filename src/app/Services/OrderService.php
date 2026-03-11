@@ -9,13 +9,11 @@ use App\Models\Profile;
 
 class OrderService
 {
-    public function orderExistsForItem(int $itemId): bool
-    {
+    public function orderExistsForItem(int $itemId) {
         return Order::where('item_id', $itemId)->exists();
     }
 
-    public function orderExistsForSession(string $sessionId): bool
-    {
+    public function orderExistsForSession(string $sessionId) {
         return Order::where('checkout_session_id', $sessionId)->exists();
     }
 
@@ -25,7 +23,7 @@ class OrderService
         Item $item,
         int $paymentMethodId,
         Profile $profile
-    ): void {
+    ) {
         Order::create([
             'buyer_id' => $buyerId,
             'item_id' => $item->id,
@@ -40,8 +38,7 @@ class OrderService
         $item->update(['is_sold' => true]);
     }
 
-    public function cancelPendingKonbiniOrderForItem(int $buyerId, int $itemId, CheckoutService $checkout): void
-    {
+    public function cancelPendingKonbiniOrderForItem(int $buyerId, int $itemId, CheckoutService $checkout) {
         $order = Order::where('buyer_id', $buyerId)
             ->where('item_id', $itemId)
             ->whereHas('paymentMethod', function ($query) {

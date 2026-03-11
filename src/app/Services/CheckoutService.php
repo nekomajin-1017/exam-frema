@@ -10,18 +10,15 @@ use Stripe\Stripe;
 
 class CheckoutService
 {
-    public function resolvePaymentSelection()
-    {
+    public function resolvePaymentSelection() {
         return Payment::orderBy('id')->get();
     }
 
-    public function findPaymentMethod(int $paymentMethodId): ?Payment
-    {
+    public function findPaymentMethod(int $paymentMethodId) {
         return Payment::find($paymentMethodId);
     }
 
-    public function createSession(Item $item, int $buyerId, Payment $paymentMethod): StripeSession
-    {
+    public function createSession(Item $item, int $buyerId, Payment $paymentMethod) {
         Stripe::setApiKey((string) config('services.stripe.secret'));
         $cancelUrl = $paymentMethod->stripe_method_type === Payment::TYPE_KONBINI
             ? route('purchase.cancel', ['item_id' => $item->id])
@@ -56,8 +53,7 @@ class CheckoutService
         OrderService $orders,
         ProfileService $profiles,
         bool $forceCreateForKonbini = false
-    ): void
-    {
+    ) {
         $stripeSecret = (string) config('services.stripe.secret');
         if ($stripeSecret === '') {
             return;
@@ -71,22 +67,21 @@ class CheckoutService
 
         $buyerId = $this->resolveBuyerId($session);
         $itemId = (int) ($session->metadata['item_id'] ?? 0);
-        if (!$buyerId || !$itemId || $orders->orderExistsForSession($sessionId)) {
+        if (! $buyerId || ! $itemId || $orders->orderExistsForSession($sessionId)) {
             return;
         }
 
         $item = Item::find($itemId);
         $buyer = $buyerId ? User::with('profile')->find($buyerId) : null;
         $profile = $buyer ? $buyer->profile : null;
-        if (!$item || !$profile || !$profiles->hasShippingAddress($profile)) {
+        if (! $item || ! $profile || ! $profiles->hasShippingAddress($profile)) {
             return;
         }
 
         $orders->createOrder($sessionId, $buyerId, $item, $this->resolvePaymentMethodId($session), $profile);
     }
 
-    private function shouldCreateOrderForSession(StripeSession $session, bool $forceCreateForKonbini = false): bool
-    {
+    private function shouldCreateOrderForSession(StripeSession $session, bool $forceCreateForKonbini = false) {
         if ($forceCreateForKonbini && $this->isKonbiniSession($session)) {
             return true;
         }
@@ -102,8 +97,7 @@ class CheckoutService
         return ($session->status ?? null) === 'complete';
     }
 
-    public function isSessionPaid(string $sessionId): bool
-    {
+    public function isSessionPaid(string $sessionId) {
         $stripeSecret = (string) config('services.stripe.secret');
         if ($stripeSecret === '') {
             return false;
@@ -115,8 +109,7 @@ class CheckoutService
         return ($session->payment_status ?? null) === 'paid';
     }
 
-    private function isKonbiniSession(StripeSession $session): bool
-    {
+    private function isKonbiniSession(StripeSession $session) {
         $paymentMethodId = (int) ($session->metadata['payment_method_id'] ?? 0);
         if ($paymentMethodId) {
             return Payment::whereKey($paymentMethodId)->value('stripe_method_type') === Payment::TYPE_KONBINI;
@@ -127,22 +120,20 @@ class CheckoutService
         return in_array(Payment::TYPE_KONBINI, $paymentMethodTypes, true);
     }
 
-    private function resolveBuyerId(StripeSession $session): int
-    {
+    private function resolveBuyerId(StripeSession $session) {
         $buyerId = (int) ($session->metadata['buyer_id'] ?? $session->client_reference_id ?? 0);
         if ($buyerId) {
             return $buyerId;
         }
 
-        if (!empty($session->customer_details?->email)) {
+        if (! empty($session->customer_details?->email)) {
             return (int) (User::where('email', $session->customer_details->email)->value('id') ?? 0);
         }
 
         return 0;
     }
 
-    private function resolvePaymentMethodId(StripeSession $session): int
-    {
+    private function resolvePaymentMethodId(StripeSession $session) {
         $paymentMethodId = (int) ($session->metadata['payment_method_id'] ?? 0);
         if ($paymentMethodId) {
             return $paymentMethodId;

@@ -3,18 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\Favorite;
-use App\Models\Item;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class ItemSearchTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_商品名で部分一致検索(): void
-    {
+    // 【評価項目ID:6】キーワードで商品名を部分一致検索したとき、合致する商品だけが一覧に表示されるかを検証
+    public function test_searches_by_partial_name() {
         $seller = $this->createUser('seller');
         $matchedItem = $this->createItem($seller->id, '腕時計ブラック');
         $notMatchedItem = $this->createItem($seller->id, 'スニーカー');
@@ -26,8 +24,8 @@ class ItemSearchTest extends TestCase
         $response->assertDontSeeText($notMatchedItem->name);
     }
 
-    public function test_検索状態はマイリストでも保持(): void
-    {
+    // 【評価項目ID:6】検索後にマイリストへ遷移してもキーワードが保持され、いいね済み商品の絞り込み結果が維持されるかを検証
+    public function test_keeps_keyword_in_mylist() {
         $user = $this->createUser('current');
         $seller = $this->createUser('seller');
         $matchedItem = $this->createItem($seller->id, '腕時計ブラック');
@@ -57,26 +55,4 @@ class ItemSearchTest extends TestCase
         $mylistResponse->assertDontSeeText($notMatchedItem->name);
     }
 
-    private function createUser(string $name): User
-    {
-        return User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-    }
-
-    private function createItem(int $userId, string $name): Item
-    {
-        return Item::create([
-            'user_id' => $userId,
-            'name' => $name,
-            'brand' => null,
-            'description' => 'テスト商品説明',
-            'price' => 1000,
-            'item_condition' => '良好',
-            'is_sold' => false,
-            'image_path' => 'dummy.jpg',
-        ]);
-    }
 }

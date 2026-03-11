@@ -10,14 +10,12 @@ class PaymentSummary extends Component
     public string $paymentMethodName = '';
     public int $itemPrice = 0;
 
-    public function mount(int $itemPrice, string $initialPaymentMethodName = ''): void
-    {
+    public function mount(int $itemPrice, string $initialPaymentMethodName = '') {
         $this->itemPrice = $itemPrice;
         $this->paymentMethodName = $initialPaymentMethodName;
     }
 
-    public function setPaymentMethodName(string $name): void
-    {
+    public function setPaymentMethodName(string $name) {
         $this->paymentMethodName = $name;
     }
 

@@ -7,8 +7,8 @@
 @section('main')
     <div class="item-layout">
         <div class="item-image">
-            @if ($item->image_path)
-                <img class="item-image-img img-fluid" src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
+            @if ($item->image_url)
+                <img class="item-image-img img-fluid" src="{{ $item->image_url }}" alt="{{ $item->name }}">
             @endif
             @if ($item->is_sold)
                 <p class="badge sold-badge">Sold</p>
@@ -80,8 +80,7 @@
                 <div class="comment-list">
                     @forelse ($item->comments as $comment)
                         @php
-                            $profileImage = $comment->user?->profile?->image_path ?? null;
-                            $commentImageUrl = $profileImage ? asset('storage/' . $profileImage) : null;
+                            $commentImageUrl = $comment->user?->profile?->image_url;
                         @endphp
                         <div class="comment-item">
                             <div class="comment-user">

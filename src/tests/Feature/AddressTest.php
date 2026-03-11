@@ -2,22 +2,20 @@
 
 namespace Tests\Feature;
 
-use App\Models\Item;
 use App\Models\Payment;
-use App\Models\User;
 use App\Services\CheckoutService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Mockery\MockInterface;
 use Stripe\Checkout\Session;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class AddressTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_住所変更は購入画面に反映(): void
-    {
+    // 【評価項目ID:12】送付先住所を変更して保存すると、購入画面に郵便番号・住所・建物名が反映されるかを検証
+    public function test_shows_updated_address_on_purchase() {
         $buyer = $this->createVerifiedUser('buyer');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
@@ -39,8 +37,8 @@ class AddressTest extends TestCase
         $purchaseResponse->assertSeeText('栄プラザ8F');
     }
 
-    public function test_購入商品に送付先住所が紐づく(): void
-    {
+    // 【評価項目ID:12】購入確定時に、直前で保存した送付先住所が注文データへ正しく保存されるかを検証
+    public function test_saves_shipping_address_on_order() {
         $buyer = $this->createVerifiedUser('buyer');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, '購入商品');
@@ -81,39 +79,4 @@ class AddressTest extends TestCase
         ]);
     }
 
-    private function createVerifiedUser(string $name): User
-    {
-        $user = User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-
-        $user->email_verified_at = now();
-        $user->save();
-
-        return $user;
-    }
-
-    private function createItem(int $sellerId, string $name): Item
-    {
-        return Item::create([
-            'user_id' => $sellerId,
-            'name' => $name,
-            'brand' => 'テストブランド',
-            'description' => 'テスト商品説明',
-            'price' => 1200,
-            'item_condition' => '良好',
-            'is_sold' => false,
-            'image_path' => 'dummy.jpg',
-        ]);
-    }
-
-    private function createPayment(string $name, string $type): Payment
-    {
-        return Payment::create([
-            'name' => $name,
-            'stripe_method_type' => $type,
-        ]);
-    }
 }

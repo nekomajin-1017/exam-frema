@@ -3,18 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\Favorite;
-use App\Models\Item;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class FavoritesTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_いいね登録と合計値増加(): void
-    {
+    // 【評価項目ID:8】いいね操作で favorites レコードが追加され、商品詳細のいいね件数表示が1件に更新されるかを検証
+    public function test_adds_favorite_and_updates_count() {
         $user = $this->createVerifiedUser('user');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
@@ -31,8 +29,8 @@ class FavoritesTest extends TestCase
         $response->assertSee('<span class="item-stat-count">1</span>', false);
     }
 
-    public function test_いいね済みアイコン色変化(): void
-    {
+    // 【評価項目ID:8】いいね済み商品では詳細画面のハートアイコンがアクティブ状態の画像に切り替わるかを検証
+    public function test_shows_active_favorite_icon() {
         $user = $this->createVerifiedUser('user');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
@@ -44,8 +42,8 @@ class FavoritesTest extends TestCase
         $response->assertSee('heartLogoPink.png', false);
     }
 
-    public function test_いいね解除と合計値減少(): void
-    {
+    // 【評価項目ID:8】再度いいね操作すると解除され、favorites レコード削除・非アクティブアイコン表示・件数0表示になるかを検証
+    public function test_removes_favorite_and_updates_count() {
         $user = $this->createVerifiedUser('user');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
@@ -68,31 +66,4 @@ class FavoritesTest extends TestCase
         $response->assertSee('<span class="item-stat-count">0</span>', false);
     }
 
-    private function createVerifiedUser(string $name): User
-    {
-        $user = User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-
-        $user->email_verified_at = now();
-        $user->save();
-
-        return $user;
-    }
-
-    private function createItem(int $userId, string $name): Item
-    {
-        return Item::create([
-            'user_id' => $userId,
-            'name' => $name,
-            'brand' => 'テストブランド',
-            'description' => 'テスト商品説明',
-            'price' => 1000,
-            'item_condition' => '良好',
-            'is_sold' => false,
-            'image_path' => 'dummy.jpg',
-        ]);
-    }
 }

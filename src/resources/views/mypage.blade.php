@@ -7,8 +7,8 @@
 @section('main')
     <div class="profile-header">
         <div class="profile-avatar">
-            @if ($user->profile && $user->profile->image_path)
-                <img class="profile-avatar-img img-fluid" src="{{ asset('storage/' . $user->profile->image_path) }}" alt="{{ $user->name }}">
+            @if ($user->profile?->image_url)
+                <img class="profile-avatar-img img-fluid" src="{{ $user->profile->image_url }}" alt="{{ $user->name }}">
             @endif
         </div>
         <h1 class="section-title section-title--h1 profile-name">{{ $user->name }}</h1>

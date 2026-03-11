@@ -29,8 +29,7 @@ class PurchaseRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
+    public function messages() {
         return [
             'payment_method_id.required' => '支払い方法を選択してください',
             'payment_method_id.integer' => '支払い方法を選択してください',

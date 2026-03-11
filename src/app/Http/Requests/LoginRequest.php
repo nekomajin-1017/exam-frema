@@ -29,8 +29,7 @@ class LoginRequest extends FortifyLoginRequest
         ];
     }
 
-    public function messages(): array
-    {
+    public function messages() {
         return [
             'email.required' => 'メールアドレスを入力してください',
             'email.email' => 'メールアドレスはメール形式で入力してください',

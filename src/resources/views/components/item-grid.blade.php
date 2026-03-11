@@ -6,8 +6,7 @@
 <div class="card-grid">
     @forelse ($items as $item)
         @php
-            $imagePath = $item->image_path ?? null;
-            $imageUrl = $imagePath ? asset('storage/' . $imagePath) : null;
+            $imageUrl = $item->image_url;
         @endphp
 
         <a class="card link-reset" href="{{ route('item.show', $item) }}">
@@ -15,7 +14,7 @@
                 @if ($imageUrl)
                     <img class="card-image-img img-fluid" src="{{ $imageUrl }}" alt="{{ $item->name }}">
                 @endif
-                @if (($item->is_sold ?? false) || (($item->orders_count ?? 0) > 0))
+                @if ($item->is_sold)
                     <span class="badge">Sold</span>
                 @endif
             </div>

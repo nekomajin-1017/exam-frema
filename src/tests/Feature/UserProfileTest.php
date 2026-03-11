@@ -2,21 +2,17 @@
 
 namespace Tests\Feature;
 
-use App\Models\Item;
 use App\Models\Order;
-use App\Models\Payment;
-use App\Models\Profile;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_プロフィール情報と出品購入一覧表示(): void
-    {
+    // 【評価項目ID:13】マイページの購入一覧でプロフィール情報と購入商品が表示され、出品一覧で自分の出品商品が表示されるかを検証
+    public function test_shows_profile_and_lists() {
         $user = $this->createVerifiedUser('user');
         $seller = $this->createVerifiedUser('seller');
         $payment = $this->createPayment();
@@ -35,21 +31,22 @@ class UserProfileTest extends TestCase
             'shipping_address' => '北海道札幌市中央区北一条西2-2-2',
             'shipping_building' => '札幌フロント7F',
         ]);
+        $buyItem->update(['is_sold' => true]);
 
         $buyResponse = $this->actingAs($user)->get(route('mypage', ['page' => 'buy']));
         $sellResponse = $this->actingAs($user)->get(route('mypage', ['page' => 'sell']));
 
         $buyResponse->assertOk();
         $buyResponse->assertSeeText($user->name);
-        $buyResponse->assertSee(asset('storage/profiles/user.png'), false);
+        $buyResponse->assertSee('/storage/profiles/user.png', false);
         $buyResponse->assertSeeText($buyItem->name);
 
         $sellResponse->assertOk();
         $sellResponse->assertSeeText($sellItem->name);
     }
 
-    public function test_プロフィール編集の初期値表示(): void
-    {
+    // 【評価項目ID:14】プロフィール編集画面を開いた際に、保存済みプロフィール値が各入力項目へ初期表示されるかを検証
+    public function test_prefills_profile_form() {
         $user = $this->createVerifiedUser('user');
         $profile = $this->createProfile(
             $user->id,
@@ -62,7 +59,7 @@ class UserProfileTest extends TestCase
         $response = $this->actingAs($user)->get(route('mypage.profile'));
 
         $response->assertOk();
-        $response->assertSee(asset('storage/' . $profile->image_path), false);
+        $response->assertSee('/storage/' . $profile->image_path, false);
         $response->assertSee('name="name"', false);
         $response->assertSee('value="初期表示ユーザー名"', false);
         $response->assertSee('name="postal_code"', false);
@@ -71,56 +68,4 @@ class UserProfileTest extends TestCase
         $response->assertSee('value="宮城県仙台市青葉区中央1-1-1"', false);
     }
 
-    private function createVerifiedUser(string $name): User
-    {
-        $user = User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-
-        $user->email_verified_at = now();
-        $user->save();
-
-        return $user;
-    }
-
-    private function createItem(int $userId, string $name): Item
-    {
-        return Item::create([
-            'user_id' => $userId,
-            'name' => $name,
-            'brand' => 'テストブランド',
-            'description' => 'テスト商品説明',
-            'price' => 1200,
-            'item_condition' => '良好',
-            'is_sold' => false,
-            'image_path' => 'dummy.jpg',
-        ]);
-    }
-
-    private function createPayment(): Payment
-    {
-        return Payment::create([
-            'name' => Payment::NAME_CARD,
-            'stripe_method_type' => Payment::TYPE_CARD,
-        ]);
-    }
-
-    private function createProfile(
-        int $userId,
-        ?string $imagePath,
-        string $displayName,
-        ?string $postalCode,
-        ?string $address
-    ): Profile {
-        return Profile::create([
-            'user_id' => $userId,
-            'image_path' => $imagePath,
-            'display_name' => $displayName,
-            'postal_code' => $postalCode,
-            'address' => $address,
-            'building' => 'ABCビル3F',
-        ]);
-    }
 }

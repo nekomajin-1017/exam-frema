@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Item extends Model
 {
     use HasFactory;
-
-    protected $table = 'items';
 
     protected $fillable = [
         'user_id',
@@ -21,6 +20,14 @@ class Item extends Model
         'is_sold',
         'image_path',
     ];
+
+    public function getImageUrlAttribute() {
+        if (! filled($this->image_path)) {
+            return null;
+        }
+
+        return Storage::url($this->image_path);
+    }
 
     public function user()
     {
@@ -42,7 +49,7 @@ class Item extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function orders()
+    public function order()
     {
         return $this->hasOne(Order::class);
     }

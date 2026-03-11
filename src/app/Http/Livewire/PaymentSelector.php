@@ -9,8 +9,7 @@ class PaymentSelector extends Component
     public $paymentMethods = [];
     public $selectedPaymentMethodId = '';
 
-    public function mount($paymentMethods, $oldPaymentMethodId = null): void
-    {
+    public function mount($paymentMethods, $oldPaymentMethodId = null) {
         $this->paymentMethods = collect($paymentMethods)
             ->map(function ($method) {
                 return [
@@ -24,13 +23,11 @@ class PaymentSelector extends Component
         $this->selectedPaymentMethodId = filled($oldPaymentMethodId) ? (string) $oldPaymentMethodId : '';
     }
 
-    public function updatedSelectedPaymentMethodId(): void
-    {
+    public function updatedSelectedPaymentMethodId() {
         $this->emit('paymentMethodUpdated', $this->selectedPaymentMethodName);
     }
 
-    public function getSelectedPaymentMethodNameProperty(): string
-    {
+    public function getSelectedPaymentMethodNameProperty() {
         if ($this->selectedPaymentMethodId === '') {
             return '';
         }

@@ -5,23 +5,21 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Favorite;
-use App\Models\Item;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class ItemDetailTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_商品詳細情報表示(): void
-    {
+    // 【評価項目ID:7】商品詳細画面で商品基本情報・カテゴリ・コメント件数/本文・いいね件数が正しく表示されるかを検証
+    public function test_shows_item_details() {
         $seller = $this->createUser('seller');
         $commentUser = $this->createUser('commenter');
         $favoriteUser1 = $this->createUser('fav1');
         $favoriteUser2 = $this->createUser('fav2');
-        $item = $this->createItem($seller->id, 'レザー財布', 1200);
+        $item = $this->createItem($seller->id, 'レザー財布', ['price' => 1200]);
         $category = Category::create(['name' => 'ファッション']);
         $item->categories()->attach($category->id);
 
@@ -55,10 +53,10 @@ class ItemDetailTest extends TestCase
         $response->assertSee('<span class="item-stat-count">2</span>', false);
     }
 
-    public function test_複数カテゴリ表示(): void
-    {
+    // 【評価項目ID:7】商品に複数カテゴリが紐づく場合、詳細画面で全カテゴリ名が表示されるかを検証
+    public function test_shows_all_categories() {
         $seller = $this->createUser('seller');
-        $item = $this->createItem($seller->id, 'スニーカー', 3000);
+        $item = $this->createItem($seller->id, 'スニーカー', ['price' => 3000]);
         $category1 = Category::create(['name' => 'メンズ']);
         $category2 = Category::create(['name' => '靴']);
         $item->categories()->attach([$category1->id, $category2->id]);
@@ -70,26 +68,4 @@ class ItemDetailTest extends TestCase
         $response->assertSeeText($category2->name);
     }
 
-    private function createUser(string $name): User
-    {
-        return User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-    }
-
-    private function createItem(int $userId, string $name, int $price): Item
-    {
-        return Item::create([
-            'user_id' => $userId,
-            'name' => $name,
-            'brand' => 'テストブランド',
-            'description' => 'テスト商品説明',
-            'price' => $price,
-            'item_condition' => '良好',
-            'is_sold' => false,
-            'image_path' => 'dummy.jpg',
-        ]);
-    }
 }

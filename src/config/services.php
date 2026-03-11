@@ -35,4 +35,6 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'mail_ui_url' => env('MAIL_UI_URL', 'http://localhost:8025'),
+
 ];

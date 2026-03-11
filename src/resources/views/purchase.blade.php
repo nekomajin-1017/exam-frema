@@ -7,7 +7,7 @@
 @section('main')
     @php
         $initialPaymentMethodId = old('payment_method_id');
-        $initialPaymentMethodName = (string) optional($paymentMethods->firstWhere('id', (int) $initialPaymentMethodId))->name;
+        $initialPaymentMethodName = (string) ($paymentMethods->firstWhere('id', (int) $initialPaymentMethodId)?->name ?? '');
     @endphp
     <div class="purchase-page">
         <form action="{{ route('purchase.store', $item) }}" method="post" novalidate>
@@ -16,8 +16,8 @@
                 <div class="purchase-main">
                 <div class="purchase-item">
                     <div class="purchase-thumb">
-                        @if ($item->image_path)
-                            <img class="purchase-thumb-img img-fluid" src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
+                        @if ($item->image_url)
+                            <img class="purchase-thumb-img img-fluid" src="{{ $item->image_url }}" alt="{{ $item->name }}">
                         @endif
                     </div>
                     <div class="purchase-item-meta">

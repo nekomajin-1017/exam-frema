@@ -31,8 +31,7 @@ class RegisterRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
+    public function messages() {
         return [
             'name.required' => 'お名前を入力してください',
             'name.max' => 'お名前は20文字以内で入力してください',

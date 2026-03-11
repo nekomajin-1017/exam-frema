@@ -3,18 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\Favorite;
-use App\Models\Item;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class MylistTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_いいね商品のみ表示(): void
-    {
+    // 【評価項目ID:5】マイリストタブでは、ログインユーザーがいいねした商品だけが表示されるかを検証
+    public function test_shows_only_favorites() {
         $currentUser = $this->createUser('current');
         $seller = $this->createUser('seller');
         $likedItem = $this->createItem($seller->id, 'いいね済み商品');
@@ -32,11 +30,11 @@ class MylistTest extends TestCase
         $response->assertDontSeeText($notLikedItem->name);
     }
 
-    public function test_購入済みはSold表示(): void
-    {
+    // 【評価項目ID:5】マイリスト内の売約済み商品に Sold ラベルが表示されるかを検証
+    public function test_shows_sold_in_mylist() {
         $currentUser = $this->createUser('current');
         $seller = $this->createUser('seller');
-        $soldItem = $this->createItem($seller->id, '購入済み商品', true);
+        $soldItem = $this->createItem($seller->id, '購入済み商品', ['is_sold' => true]);
 
         Favorite::create([
             'user_id' => $currentUser->id,
@@ -50,8 +48,8 @@ class MylistTest extends TestCase
         $response->assertSeeText('Sold');
     }
 
-    public function test_未認証は空表示(): void
-    {
+    // 【評価項目ID:5】未ログインでマイリストを開いた場合は空状態メッセージのみ表示され、商品は表示されないかを検証
+    public function test_shows_empty_mylist_for_guest() {
         $seller = $this->createUser('seller');
         $item = $this->createItem($seller->id, '表示されない商品');
 
@@ -62,26 +60,4 @@ class MylistTest extends TestCase
         $response->assertDontSeeText($item->name);
     }
 
-    private function createUser(string $name): User
-    {
-        return User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-    }
-
-    private function createItem(int $userId, string $name, bool $isSold = false): Item
-    {
-        return Item::create([
-            'user_id' => $userId,
-            'name' => $name,
-            'brand' => null,
-            'description' => 'テスト商品説明',
-            'price' => 1000,
-            'item_condition' => '良好',
-            'is_sold' => $isSold,
-            'image_path' => 'dummy.jpg',
-        ]);
-    }
 }

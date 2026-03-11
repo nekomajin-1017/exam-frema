@@ -9,8 +9,8 @@ class Payment extends Model
 {
     use HasFactory;
 
-    public const NAME_CARD = 'クレジットカード';
-    public const NAME_KONBINI = 'コンビニ払い';
+    public const NAME_CARD = 'カード支払い';
+    public const NAME_KONBINI = 'コンビニ支払い';
     public const TYPE_CARD = 'card';
     public const TYPE_KONBINI = 'konbini';
 

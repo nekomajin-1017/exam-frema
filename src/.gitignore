@@ -1,6 +1,10 @@
 /node_modules
 /public/hot
 /public/storage
+/public/items/*
+!/public/items/.gitignore
+/public/profiles/*
+!/public/profiles/.gitignore
 /storage/*.key
 /vendor
 .env

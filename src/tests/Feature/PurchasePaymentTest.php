@@ -2,23 +2,20 @@
 
 namespace Tests\Feature;
 
-use App\Models\Item;
 use App\Models\Payment;
-use App\Models\Profile;
-use App\Models\User;
 use App\Services\CheckoutService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Mockery\MockInterface;
 use Stripe\Checkout\Session;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class PurchasePaymentTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_購入ボタンで購入完了(): void
-    {
+    // 【評価項目ID:10】購入実行時にチェックアウトセッション作成後のリダイレクト・注文作成・商品の売約状態更新が行われるかを検証
+    public function test_completes_purchase() {
         $buyer = $this->createVerifiedUser('buyer');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
@@ -45,8 +42,8 @@ class PurchasePaymentTest extends TestCase
         ]);
     }
 
-    public function test_購入商品は一覧でSold表示(): void
-    {
+    // 【評価項目ID:10】購入後の商品がトップページ一覧で Sold ラベル付き表示になるかを検証
+    public function test_shows_sold_on_index_after_purchase() {
         $buyer = $this->createVerifiedUser('buyer');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'Sold対象商品');
@@ -67,8 +64,8 @@ class PurchasePaymentTest extends TestCase
         $response->assertSeeText('Sold');
     }
 
-    public function test_購入商品はプロフィール購入一覧に追加(): void
-    {
+    // 【評価項目ID:10】購入完了した商品がマイページの購入一覧（buy タブ）に表示されるかを検証
+    public function test_adds_purchase_to_buy_list() {
         $buyer = $this->createVerifiedUser('buyer');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, '購入履歴商品');
@@ -88,8 +85,8 @@ class PurchasePaymentTest extends TestCase
         $response->assertSeeText($item->name);
     }
 
-    public function test_支払い方法選択は小計に反映(): void
-    {
+    // 【評価項目ID:11】配送先未入力で購入失敗した場合でも、選択した支払い方法が購入画面上の表示に保持されるかを検証
+    public function test_keeps_payment_selection_on_purchase_page() {
         $buyer = $this->createVerifiedUser('buyer');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, '支払い方法確認商品');
@@ -110,11 +107,10 @@ class PurchasePaymentTest extends TestCase
         $purchasePage = $this->actingAs($buyer)->get(route('purchase.show', $item));
 
         $purchasePage->assertOk();
-        $purchasePage->assertSee('<strong>クレジットカード</strong>', false);
+        $purchasePage->assertSee('<strong>カード支払い</strong>', false);
     }
 
-    private function mockCheckout(Payment $payment, string $sessionId, string $sessionUrl): void
-    {
+    private function mockCheckout(Payment $payment, string $sessionId, string $sessionUrl) {
         $this->mock(CheckoutService::class, function (MockInterface $mock) use ($payment, $sessionId, $sessionUrl) {
             $mock->shouldReceive('findPaymentMethod')
                 ->once()
@@ -130,50 +126,4 @@ class PurchasePaymentTest extends TestCase
         });
     }
 
-    private function createVerifiedUser(string $name): User
-    {
-        $user = User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-
-        $user->email_verified_at = now();
-        $user->save();
-
-        return $user;
-    }
-
-    private function createItem(int $sellerId, string $name): Item
-    {
-        return Item::create([
-            'user_id' => $sellerId,
-            'name' => $name,
-            'brand' => 'テストブランド',
-            'description' => 'テスト商品説明',
-            'price' => 1200,
-            'item_condition' => '良好',
-            'is_sold' => false,
-            'image_path' => 'dummy.jpg',
-        ]);
-    }
-
-    private function createPayment(string $name, string $type): Payment
-    {
-        return Payment::create([
-            'name' => $name,
-            'stripe_method_type' => $type,
-        ]);
-    }
-
-    private function createProfile(int $userId): Profile
-    {
-        return Profile::create([
-            'user_id' => $userId,
-            'display_name' => '表示名',
-            'postal_code' => '650-0001',
-            'address' => '兵庫県神戸市中央区加納町4-4-4',
-            'building' => '神戸タワー12F',
-        ]);
-    }
 }

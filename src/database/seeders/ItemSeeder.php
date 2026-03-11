@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Category;
 use App\Models\Item;
 use App\Models\User;
+use App\Support\ItemConditions;
 
 class ItemSeeder extends Seeder
 {
@@ -25,15 +26,14 @@ class ItemSeeder extends Seeder
         }
     }
 
-    private function itemSeeds(): array
-    {
+    private function itemSeeds() {
         return [
             [
                 'name' => '腕時計',
                 'brand' => 'Rolax',
                 'description' => 'スタイリッシュなデザインのメンズ腕時計',
                 'price' => 15000,
-                'condition' => '良好',
+                'condition' => ItemConditions::ALL[0],
                 'image_path' => 'products/watch.jpg',
                 'categories' => ['ファッション', 'メンズ'],
             ],
@@ -42,7 +42,7 @@ class ItemSeeder extends Seeder
                 'brand' => '西芝',
                 'description' => '高速で信頼性の高いハードディスク',
                 'price' => 5000,
-                'condition' => '目立った傷や汚れなし',
+                'condition' => ItemConditions::ALL[1],
                 'image_path' => 'products/hdd.jpg',
                 'categories' => ['家電'],
             ],
@@ -51,7 +51,7 @@ class ItemSeeder extends Seeder
                 'brand' => 'なし',
                 'description' => '新鮮な玉ねぎ3束のセット',
                 'price' => 300,
-                'condition' => 'やや傷や汚れあり',
+                'condition' => ItemConditions::ALL[2],
                 'image_path' => 'products/onion.jpg',
                 'categories' => ['キッチン'],
             ],
@@ -60,7 +60,7 @@ class ItemSeeder extends Seeder
                 'brand' => null,
                 'description' => 'クラシックなデザインの革靴',
                 'price' => 4000,
-                'condition' => '状態が悪い',
+                'condition' => ItemConditions::ALL[3],
                 'image_path' => 'products/shoes.jpg',
                 'categories' => ['ファッション', 'メンズ'],
             ],
@@ -69,7 +69,7 @@ class ItemSeeder extends Seeder
                 'brand' => null,
                 'description' => '高性能なノートパソコン',
                 'price' => 45000,
-                'condition' => '良好',
+                'condition' => ItemConditions::ALL[0],
                 'image_path' => 'products/laptop.jpg',
                 'categories' => ['家電'],
             ],
@@ -78,7 +78,7 @@ class ItemSeeder extends Seeder
                 'brand' => 'なし',
                 'description' => '高音質のレコーディング用マイク',
                 'price' => 8000,
-                'condition' => '目立った傷や汚れなし',
+                'condition' => ItemConditions::ALL[1],
                 'image_path' => 'products/mic.jpg',
                 'categories' => ['家電'],
             ],
@@ -87,7 +87,7 @@ class ItemSeeder extends Seeder
                 'brand' => null,
                 'description' => 'おしゃれなショルダーバッグ',
                 'price' => 3500,
-                'condition' => 'やや傷や汚れあり',
+                'condition' => ItemConditions::ALL[2],
                 'image_path' => 'products/bag.jpg',
                 'categories' => ['ファッション', 'レディース'],
             ],
@@ -96,7 +96,7 @@ class ItemSeeder extends Seeder
                 'brand' => 'なし',
                 'description' => '使いやすいタンブラー',
                 'price' => 500,
-                'condition' => '状態が悪い',
+                'condition' => ItemConditions::ALL[3],
                 'image_path' => 'products/tumbler.jpg',
                 'categories' => ['インテリア', 'キッチン'],
             ],
@@ -105,7 +105,7 @@ class ItemSeeder extends Seeder
                 'brand' => 'Starbacks',
                 'description' => '手動のコーヒーミル',
                 'price' => 4000,
-                'condition' => '良好',
+                'condition' => ItemConditions::ALL[0],
                 'image_path' => 'products/mill.jpg',
                 'categories' => ['インテリア', 'キッチン'],
             ],
@@ -114,7 +114,7 @@ class ItemSeeder extends Seeder
                 'brand' => null,
                 'description' => '便利なメイクアップセット',
                 'price' => 2500,
-                'condition' => '目立った傷や汚れなし',
+                'condition' => ItemConditions::ALL[1],
                 'image_path' => 'products/makeup.jpg',
                 'categories' => ['コスメ', 'ファッション', 'レディース'],
             ],
@@ -125,7 +125,7 @@ class ItemSeeder extends Seeder
         array $data,
         int $sellerId,
         $categories
-    ): void {
+    ) {
         $categoryNames = $data['categories'] ?? [];
         unset($data['categories']);
         $itemCondition = $data['condition'];

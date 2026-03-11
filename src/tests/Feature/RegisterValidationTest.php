@@ -9,8 +9,7 @@ class RegisterValidationTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function validInput(array $overrides = []): array
-    {
+    private function validInput(array $overrides = []) {
         return array_merge([
             'name' => 'テスト太郎',
             'email' => 'taro@example.com',
@@ -19,8 +18,8 @@ class RegisterValidationTest extends TestCase
         ], $overrides);
     }
 
-    public function test_名前必須(): void
-    {
+    // 【評価項目ID:1】会員登録時に名前未入力で送信した場合、name フィールドの必須エラーが返るかを検証
+    public function test_requires_name() {
         $response = $this->from('/register')->post('/register', $this->validInput([
             'name' => '',
             'email' => 'name-required@example.com',
@@ -33,8 +32,8 @@ class RegisterValidationTest extends TestCase
         $this->assertSame('お名前を入力してください', session('errors')->first('name'));
     }
 
-    public function test_メール必須(): void
-    {
+    // 【評価項目ID:1】会員登録時にメールアドレス未入力で送信した場合、email フィールドの必須エラーが返るかを検証
+    public function test_requires_email() {
         $response = $this->from('/register')->post('/register', $this->validInput([
             'email' => '',
         ]));
@@ -46,8 +45,8 @@ class RegisterValidationTest extends TestCase
         $this->assertSame('メールアドレスを入力してください', session('errors')->first('email'));
     }
 
-    public function test_パスワード必須(): void
-    {
+    // 【評価項目ID:1】会員登録時にパスワードと確認用パスワードを未入力で送信した場合、password 必須エラーが返るかを検証
+    public function test_requires_password() {
         $response = $this->from('/register')->post('/register', $this->validInput([
             'password' => '',
             'password_confirmation' => '',
@@ -61,8 +60,8 @@ class RegisterValidationTest extends TestCase
         $this->assertSame('パスワードを入力してください', session('errors')->first('password'));
     }
 
-    public function test_パスワード8文字以上(): void
-    {
+    // 【評価項目ID:1】会員登録時に8文字未満のパスワードを送信した場合、最小文字数エラーが返るかを検証
+    public function test_requires_password_min_length() {
         $response = $this->from('/register')->post('/register', $this->validInput([
             'password' => 'pass123',
             'password_confirmation' => 'pass123',
@@ -76,8 +75,8 @@ class RegisterValidationTest extends TestCase
         $this->assertSame('パスワードは8文字以上で入力してください', session('errors')->first('password'));
     }
 
-    public function test_確認用パスワード一致(): void
-    {
+    // 【評価項目ID:1】会員登録時に確認用パスワード不一致で送信した場合、一致チェックエラーが返るかを検証
+    public function test_requires_password_match() {
         $response = $this->from('/register')->post('/register', $this->validInput([
             'password' => 'Coachtech777',
             'password_confirmation' => 'password999',

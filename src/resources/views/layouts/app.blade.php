@@ -19,8 +19,8 @@
             @unless (request()->routeIs('verification.notice'))
                 <div class="search-bar">
                     <form action="{{ route('home') }}" method="get">
-                        <input class="search-input" type="text" name="keyword" placeholder="何をお探しですか？" value="{{ $keyword ?? '' }}">
-                        @if (($tab ?? '') === 'mylist')
+                        <input class="search-input" type="text" name="keyword" placeholder="何をお探しですか？" value="{{ request('keyword', '') }}">
+                        @if (request('tab') === 'mylist')
                             <input type="hidden" name="tab" value="mylist">
                         @endif
                     </form>
@@ -28,7 +28,7 @@
                 <ul class="header-actions">
                     @if (Auth::check())
                         <li>
-                            <form action="/logout" method="post">
+                            <form action="{{ route('logout') }}" method="post">
                                 @csrf
                                 <button class="header-button" type="submit">ログアウト</button>
                             </form>

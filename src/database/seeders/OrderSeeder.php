@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Item;
 use App\Models\User;
+use App\Services\OrderService;
 
 class OrderSeeder extends Seeder
 {
@@ -15,22 +15,22 @@ class OrderSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(OrderService $orders)
     {
-        $buyer = User::where('email', 'buyer@example.com')->with('profile')->firstOrFail();
+        $buyer = User::where('email', 'buyer@example.com')
+            ->has('profile')
+            ->with('profile')
+            ->firstOrFail();
+        $profile = $buyer->profile;
         $item = Item::where('name', 'HDD')->firstOrFail();
-        $paymentMethod = Payment::where('name', 'クレジットカード')->firstOrFail();
+        $paymentMethod = Payment::where('name', Payment::NAME_CARD)->firstOrFail();
 
-        Order::create([
-            'buyer_id' => $buyer->id,
-            'item_id' => $item->id,
-            'total_price' => $item->price,
-            'payment_method_id' => $paymentMethod->id,
-            'shipping_postal_code' => $buyer->profile->postal_code,
-            'shipping_address' => $buyer->profile->address,
-            'shipping_building' => $buyer->profile->building,
-        ]);
-
-        $item->update(['is_sold' => true]);
+        $orders->createOrder(
+            'seed_order_hdd',
+            $buyer->id,
+            $item,
+            $paymentMethod->id,
+            $profile
+        );
     }
 }

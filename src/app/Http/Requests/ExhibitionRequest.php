@@ -37,8 +37,7 @@ class ExhibitionRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
+    public function messages() {
         return [
             'name.required' => '商品名を入力してください',
             'description.required' => '商品説明を入力してください',

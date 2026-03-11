@@ -14,8 +14,7 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function validRegisterInput(array $overrides = []): array
-    {
+    private function validRegisterInput(array $overrides = []) {
         return array_merge([
             'name' => 'テスト太郎',
             'email' => 'taro@example.com',
@@ -24,15 +23,15 @@ class AuthTest extends TestCase
         ], $overrides);
     }
 
-    public function test_登録成功(): void
-    {
+    // 【評価項目ID:1,16】名前・メール・パスワードで会員登録後、認証画面を経由してプロフィール設定画面へ遷移するかを検証
+    public function test_registers_user() {
         $input = $this->validRegisterInput([
             'email' => 'success@example.com',
         ]);
 
-        $response = $this->post('/register', $input);
+        $registerResponse = $this->post('/register', $input);
 
-        $response->assertRedirect(route('verification.notice'));
+        $registerResponse->assertRedirect(route('verification.notice'));
 
         $this->assertDatabaseHas('users', [
             'name' => 'テスト太郎',
@@ -47,10 +46,26 @@ class AuthTest extends TestCase
         ]);
 
         $this->assertAuthenticatedAs($user);
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            [
+                'id' => $user->id,
+                'hash' => sha1($user->email),
+            ]
+        );
+
+        $verifyResponse = $this->actingAs($user)->get($verificationUrl);
+
+        $verifyResponse->assertRedirect('/mypage/profile');
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
+
     }
 
-    public function test_会員登録後に認証メール送信される(): void
-    {
+    // 【評価項目ID:1,16】会員登録完了時に VerifyEmail 通知が対象ユーザーへ1通送信されるかを検証
+    public function test_sends_verification_email() {
         Notification::fake();
 
         $input = $this->validRegisterInput([
@@ -66,8 +81,8 @@ class AuthTest extends TestCase
         Notification::assertSentTo($user, VerifyEmail::class);
     }
 
-    public function test_認証はこちらからでメール認証サイト遷移(): void
-    {
+    // 【評価項目ID:16】メール認証案内画面に「認証はこちらから」リンクが表示され、Mail UI のURLが設定値どおり埋め込まれるかを検証
+    public function test_shows_mail_link_on_verification_notice() {
         $user = User::create([
             'name' => '未認証ユーザー',
             'email' => 'unverified@example.com',
@@ -78,39 +93,11 @@ class AuthTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('認証はこちらから');
-        $response->assertSee('href="http://localhost:8025"', false);
+        $response->assertSee('href="' . config('services.mail_ui_url') . '"', false);
     }
 
-    public function test_認証完了でプロフィール設定画面遷移(): void
-    {
-        $input = $this->validRegisterInput([
-            'email' => 'verify-flow@example.com',
-        ]);
-
-        $registerResponse = $this->post('/register', $input);
-        $registerResponse->assertRedirect(route('verification.notice'));
-
-        $user = User::where('email', 'verify-flow@example.com')->first();
-        $this->assertNotNull($user);
-        $this->assertFalse($user->hasVerifiedEmail());
-
-        $verificationUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(60),
-            [
-                'id' => $user->id,
-                'hash' => sha1($user->email),
-            ]
-        );
-
-        $verifyResponse = $this->actingAs($user)->get($verificationUrl);
-
-        $verifyResponse->assertRedirect('/mypage/profile');
-        $this->assertTrue($user->fresh()->hasVerifiedEmail());
-    }
-
-    public function test_正しい情報でログイン処理実行(): void
-    {
+    // 【評価項目ID:2】認証済みユーザーが正しい認証情報でログインするとトップページへ遷移し認証状態になるかを検証
+    public function test_logs_in_user() {
         $user = User::create([
             'name' => 'ログイン太郎',
             'email' => 'login-user@example.com',
@@ -127,8 +114,8 @@ class AuthTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_ログアウト処理実行(): void
-    {
+    // 【評価項目ID:3】ログイン中ユーザーがログアウトするとトップページへ遷移し、ゲスト状態へ戻るかを検証
+    public function test_logs_out_user() {
         $user = User::create([
             'name' => 'ログアウト太郎',
             'email' => 'logout-user@example.com',

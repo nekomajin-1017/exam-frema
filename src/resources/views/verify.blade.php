@@ -12,7 +12,7 @@
                 <span class="verify-line">メール認証を完了してください。</span>
             </p>
 
-            <a class="verify-open-mail link-reset" href="http://localhost:8025" target="_blank" rel="noopener noreferrer">認証はこちらから</a>
+            <a class="verify-open-mail link-reset" href="{{ config('services.mail_ui_url') }}" target="_blank" rel="noopener noreferrer">認証はこちらから</a>
 
             @if (session('status') === 'verification-link-sent')
                 <p class="status-message">認証メールを再送しました。</p>

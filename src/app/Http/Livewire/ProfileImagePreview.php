@@ -12,8 +12,7 @@ class ProfileImagePreview extends Component
     public $image;
     public ?string $initialImageUrl = null;
 
-    public function mount(?string $initialImageUrl = null): void
-    {
+    public function mount(?string $initialImageUrl = null) {
         $this->initialImageUrl = $initialImageUrl;
     }
 

@@ -2,18 +2,16 @@
 
 namespace Tests\Feature;
 
-use App\Models\Item;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class CommentsTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_ログイン済みはコメント送信可能(): void
-    {
+    // 【評価項目ID:9】ログイン済みユーザーがコメント投稿すると、comments テーブルへ保存され商品詳細のコメント件数に反映されるかを検証
+    public function test_allows_comment_for_user() {
         $user = $this->createVerifiedUser('user');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
@@ -33,8 +31,8 @@ class CommentsTest extends TestCase
         $response->assertSeeText('コメント(1)');
     }
 
-    public function test_未ログインはコメント送信不可(): void
-    {
+    // 【評価項目ID:9】未ログインユーザーがコメント投稿を試みた場合、ログイン画面へリダイレクトされコメントは保存されないかを検証
+    public function test_rejects_comment_for_guest() {
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
 
@@ -49,8 +47,8 @@ class CommentsTest extends TestCase
         ]);
     }
 
-    public function test_コメント未入力はバリデーションエラー(): void
-    {
+    // 【評価項目ID:9】コメント本文が空文字で投稿された場合、バリデーションエラーとなりコメントが1件も作成されないかを検証
+    public function test_requires_comment_body() {
         $user = $this->createVerifiedUser('user');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
@@ -68,8 +66,8 @@ class CommentsTest extends TestCase
         $this->assertDatabaseCount('comments', 0);
     }
 
-    public function test_コメント255文字超過はバリデーションエラー(): void
-    {
+    // 【評価項目ID:9】256文字のコメントを投稿した場合、255文字上限のバリデーションエラーとなり保存されないかを検証
+    public function test_rejects_comment_over_255_chars() {
         $user = $this->createVerifiedUser('user');
         $seller = $this->createVerifiedUser('seller');
         $item = $this->createItem($seller->id, 'テスト商品');
@@ -88,31 +86,4 @@ class CommentsTest extends TestCase
         $this->assertDatabaseCount('comments', 0);
     }
 
-    private function createVerifiedUser(string $name): User
-    {
-        $user = User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-
-        $user->email_verified_at = now();
-        $user->save();
-
-        return $user;
-    }
-
-    private function createItem(int $userId, string $name): Item
-    {
-        return Item::create([
-            'user_id' => $userId,
-            'name' => $name,
-            'brand' => 'テストブランド',
-            'description' => 'テスト商品説明',
-            'price' => 1000,
-            'item_condition' => '良好',
-            'is_sold' => false,
-            'image_path' => 'dummy.jpg',
-        ]);
-    }
 }

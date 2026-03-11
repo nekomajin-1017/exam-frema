@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ProfileService
 {
-    public function upsert(User $user, array $data, ?UploadedFile $image = null): void
-    {
+    public function upsert(User $user, array $data, ?UploadedFile $image = null) {
         $profile = Profile::where('user_id', $user->id)->first();
 
         if ($image) {
@@ -27,8 +26,7 @@ class ProfileService
         );
     }
 
-    public function hasShippingAddress(?Profile $profile): bool
-    {
+    public function hasShippingAddress(?Profile $profile) {
         return (bool) (
             $profile
             && filled($profile->postal_code)

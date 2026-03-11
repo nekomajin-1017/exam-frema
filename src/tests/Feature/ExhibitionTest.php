@@ -4,20 +4,19 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Item;
-use App\Models\User;
 use App\Support\ItemConditions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Tests\Concerns\CreatesTestModels;
 use Tests\TestCase;
 
 class ExhibitionTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTestModels;
 
-    public function test_出品情報を保存できる(): void
-    {
+    // 【評価項目ID:15】出品フォーム送信時に商品本体・カテゴリ中間テーブル・商品画像が正しく保存されるかを検証
+    public function test_stores_exhibition_item() {
         Storage::fake('public');
         $user = $this->createVerifiedUser('seller');
         $category1 = Category::create(['name' => 'ファッション']);
@@ -54,17 +53,4 @@ class ExhibitionTest extends TestCase
         Storage::disk('public')->assertExists($item->image_path);
     }
 
-    private function createVerifiedUser(string $name): User
-    {
-        $user = User::create([
-            'name' => $name,
-            'email' => $name . '@example.com',
-            'password' => Hash::make('Coachtech777'),
-        ]);
-
-        $user->email_verified_at = now();
-        $user->save();
-
-        return $user;
-    }
 }

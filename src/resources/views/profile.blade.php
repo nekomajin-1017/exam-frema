@@ -10,7 +10,7 @@
         <form class="profile-edit-form" action="{{ route('mypage.profile.store') }}" method="post" enctype="multipart/form-data" novalidate>
             @csrf
             <div class="form-group">
-                <livewire:profile-image-preview :initial-image-url="$profile && $profile->image_path ? asset('storage/' . $profile->image_path) : null" />
+                <livewire:profile-image-preview :initial-image-url="$profile?->image_url" />
                 @error('image')<p class="field-error">{{ $message }}</p>@enderror
             </div>
             <x-form-field name="name" label="ユーザー名" :value="$profile->display_name ?? $user->name" />
