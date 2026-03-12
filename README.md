@@ -43,25 +43,19 @@ docker compose up -d --build
 
 ### 2. Laravel 環境構築（通常実行環境）
 
-1. PHP コンテナへ入る。
+1. 依存パッケージをインストールする。
 
 ```bash
-docker compose exec php bash
+docker compose exec -T php composer install
 ```
 
-2. 依存パッケージをインストールする。
+2. 環境変数ファイルを作成する。
 
 ```bash
-composer install
+docker compose exec -T php cp .env.example .env
 ```
 
-3. 環境変数ファイルを作成する。
-
-```bash
-cp .env.example .env
-```
-
-4. `.env` に以下を設定する。
+3. `src/.env` に以下を設定する。
 
 ```dotenv
 DB_CONNECTION=mysql
@@ -74,22 +68,22 @@ STRIPE_KEY=pk_test_xxx（取得したキーを入力）
 STRIPE_SECRET=sk_test_xxx（取得したキーを入力）
 ```
 
-5. アプリケーションキーを生成する。
+4. アプリケーションキーを生成する。
 
 ```bash
-php artisan key:generate
+docker compose exec -T php php artisan key:generate
 ```
 
-6. テーブル作成とダミーデータを投入する。
+5. テーブル作成とダミーデータを投入する。
 
 ```bash
-php artisan migrate --seed
+docker compose exec -T php php artisan migrate --seed
 ```
 
-7. 画像保存用のシンボリックリンクを作成する。
+6. 画像保存用のシンボリックリンクを作成する。
 
 ```bash
-php artisan storage:link
+docker compose exec -T php php artisan storage:link
 ```
 
 ### 3. テスト環境構築
@@ -97,10 +91,10 @@ php artisan storage:link
 1. `.env.testing` を作成する。
 
 ```bash
-cp .env.example .env.testing
+docker compose exec -T php cp .env.example .env.testing
 ```
 
-2. `.env.testing` に以下を設定する。
+2. `src/.env.testing` に以下を設定する。
 
 ```dotenv
 DB_CONNECTION=mysql_test
@@ -113,7 +107,9 @@ STRIPE_KEY=（任意）
 STRIPE_SECRET=（任意）
 ```
 
-3. テスト用APPキーを生成する。
+※ テストでは `CheckoutService` をモック化しているため、Stripe の API 呼び出しは行われません。
+
+3. テスト用 APP キーを生成する。
 
 ```bash
 docker compose exec -T php php artisan key:generate --env=testing
@@ -122,19 +118,13 @@ docker compose exec -T php php artisan key:generate --env=testing
 4. テスト用データベースを作成する。
 
 ```bash
-docker compose exec mysql bash
-mysql -u root -p
-CREATE DATABASE demo_test;
-exit
+docker compose exec -T mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS demo_test;"
 ```
-
-※ パスワードは `root`。
 
 5. テスト用マイグレーションとシードを実行する。
 
 ```bash
-docker compose exec php bash
-php artisan migrate --seed --env=testing
+docker compose exec -T php php artisan migrate --seed --env=testing
 ```
 
 6. 必要に応じて設定キャッシュをクリアする。
@@ -190,5 +180,4 @@ docker compose exec -T php vendor/bin/phpunit
 
 ## 補足
 
-- テストでは `CheckoutService` をモック化しているため、Stripe の API 呼び出しは行われません。`STRIPE_KEY` / `STRIPE_SECRET` は任意です。
 - コンビニ決済完了時は、Stripe の仕様上 `localhost` へ自動遷移しません。手動で `http://localhost/` にアクセスしてください。
