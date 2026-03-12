@@ -176,7 +176,7 @@ docker compose exec -T php vendor/bin/phpunit
 
 ### ER 図
 
-![ER図](er.png)
+![ER図](er1.png)
 
 ## 補足
 
