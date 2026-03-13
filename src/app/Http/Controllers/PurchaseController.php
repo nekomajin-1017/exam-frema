@@ -63,8 +63,11 @@ class PurchaseController extends Controller
         }
 
         $session = $checkout->createSession($item, $user->id, $paymentMethod);
-        if ($paymentMethod->stripe_method_type === Payment::TYPE_KONBINI && !$orders->orderExistsForItem($item->id)) {
-            $orders->createOrder($session->id, $user->id, $item, $paymentMethod->id, $profile);
+        if ($paymentMethod->stripe_method_type === Payment::TYPE_KONBINI) {
+            $created = $orders->createOrder($session->id, $user->id, $item, $paymentMethod->id, $profile);
+            if (! $created) {
+                return redirect()->route('home');
+            }
         }
 
         return redirect($session->url);

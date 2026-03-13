@@ -67,7 +67,7 @@ class CheckoutService
 
         $buyerId = $this->resolveBuyerId($session);
         $itemId = (int) ($session->metadata['item_id'] ?? 0);
-        if (! $buyerId || ! $itemId || $orders->orderExistsForSession($sessionId)) {
+        if (! $buyerId || ! $itemId) {
             return;
         }
 

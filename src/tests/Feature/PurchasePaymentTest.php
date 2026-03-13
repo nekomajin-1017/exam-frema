@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Order;
 use App\Models\Payment;
 use App\Services\CheckoutService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -108,6 +109,134 @@ class PurchasePaymentTest extends TestCase
 
         $purchasePage->assertOk();
         $purchasePage->assertSee('<strong>カード支払い</strong>', false);
+    }
+
+    // 【評価項目ID:10】購入成功画面では完了処理実行後に商品一覧へ戻るかを検証
+    public function test_redirects_purchase_success_to_home() {
+        $this->mock(CheckoutService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('completeOrderBySessionId')
+                ->once()
+                ->withArgs(function (string $sessionId, $orders, $profiles, bool $forceCreateForKonbini) {
+                    return $sessionId === 'sess_success_route' && $forceCreateForKonbini === true;
+                });
+        });
+
+        $response = $this->get(route('purchase.success', [
+            'session_id' => 'sess_success_route',
+        ]));
+
+        $response->assertRedirect(route('home'));
+    }
+
+    // 【実装保全のため】購入キャンセル時は未払いコンビニ注文だけを取り消し、売約状態も戻すかを検証
+    public function test_cancels_only_unpaid_konbini_order() {
+        $buyer = $this->createVerifiedUser('buyer');
+        $seller = $this->createVerifiedUser('seller');
+        $unpaidItem = $this->createItem($seller->id, '未払いコンビニ商品', ['is_sold' => true]);
+        $paidItem = $this->createItem($seller->id, '支払い済みコンビニ商品', ['is_sold' => true]);
+        $cardItem = $this->createItem($seller->id, 'カード決済商品', ['is_sold' => true]);
+        $konbiniPayment = $this->createPayment(Payment::NAME_KONBINI, Payment::TYPE_KONBINI);
+        $cardPayment = $this->createPayment(Payment::NAME_CARD, Payment::TYPE_CARD);
+        $profile = $this->createProfile($buyer->id);
+
+        Order::create([
+            'buyer_id' => $buyer->id,
+            'item_id' => $unpaidItem->id,
+            'checkout_session_id' => 'sess_unpaid',
+            'total_price' => $unpaidItem->price,
+            'payment_method_id' => $konbiniPayment->id,
+            'shipping_postal_code' => $profile->postal_code,
+            'shipping_address' => $profile->address,
+            'shipping_building' => $profile->building,
+        ]);
+        Order::create([
+            'buyer_id' => $buyer->id,
+            'item_id' => $paidItem->id,
+            'checkout_session_id' => 'sess_paid',
+            'total_price' => $paidItem->price,
+            'payment_method_id' => $konbiniPayment->id,
+            'shipping_postal_code' => $profile->postal_code,
+            'shipping_address' => $profile->address,
+            'shipping_building' => $profile->building,
+        ]);
+        Order::create([
+            'buyer_id' => $buyer->id,
+            'item_id' => $cardItem->id,
+            'checkout_session_id' => 'sess_card',
+            'total_price' => $cardItem->price,
+            'payment_method_id' => $cardPayment->id,
+            'shipping_postal_code' => $profile->postal_code,
+            'shipping_address' => $profile->address,
+            'shipping_building' => $profile->building,
+        ]);
+
+        $this->mock(CheckoutService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('isSessionPaid')
+                ->once()
+                ->with('sess_unpaid')
+                ->andReturn(false);
+        });
+
+        $response = $this->actingAs($buyer)->get(route('purchase.cancel', [
+            'item_id' => $unpaidItem->id,
+        ]));
+
+        $response->assertRedirect(route('home'));
+        $this->assertDatabaseMissing('orders', [
+            'item_id' => $unpaidItem->id,
+        ]);
+        $this->assertDatabaseHas('items', [
+            'id' => $unpaidItem->id,
+            'is_sold' => false,
+        ]);
+        $this->assertDatabaseHas('orders', [
+            'item_id' => $paidItem->id,
+            'checkout_session_id' => 'sess_paid',
+        ]);
+        $this->assertDatabaseHas('items', [
+            'id' => $paidItem->id,
+            'is_sold' => true,
+        ]);
+        $this->assertDatabaseHas('orders', [
+            'item_id' => $cardItem->id,
+            'checkout_session_id' => 'sess_card',
+        ]);
+        $this->assertDatabaseHas('items', [
+            'id' => $cardItem->id,
+            'is_sold' => true,
+        ]);
+    }
+
+    // 【評価項目ID:16】未認証メールユーザーは購入・出品・マイページ・コメント・いいねの保護ルートへ入れないかを検証
+    public function test_unverified_user_cannot_access_verified_routes() {
+        $user = $this->createUser('unverified');
+        $seller = $this->createVerifiedUser('seller');
+        $item = $this->createItem($seller->id, '保護対象商品');
+
+        $this->actingAs($user)
+            ->get(route('purchase.show', $item))
+            ->assertRedirect(route('verification.notice'));
+
+        $this->actingAs($user)
+            ->get(route('sell.show'))
+            ->assertRedirect(route('verification.notice'));
+
+        $this->actingAs($user)
+            ->get(route('mypage'))
+            ->assertRedirect(route('verification.notice'));
+
+        $this->actingAs($user)
+            ->post(route('item.comment', $item), [
+                'comment' => '未認証コメント',
+            ])
+            ->assertRedirect(route('verification.notice'));
+
+        $this->actingAs($user)
+            ->post(route('item.favorite', $item))
+            ->assertRedirect(route('verification.notice'));
+
+        $this->assertDatabaseCount('comments', 0);
+        $this->assertDatabaseCount('favorites', 0);
     }
 
     private function mockCheckout(Payment $payment, string $sessionId, string $sessionUrl) {
