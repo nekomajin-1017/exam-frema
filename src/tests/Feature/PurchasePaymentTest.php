@@ -111,7 +111,7 @@ class PurchasePaymentTest extends TestCase
         $purchasePage->assertSee('<strong>カード支払い</strong>', false);
     }
 
-    // 【評価項目ID:10】購入成功画面では完了処理実行後に商品一覧へ戻るかを検証
+    // 【実装保全のため】購入成功コールバックで完了処理後に商品一覧へリダイレクトされるかを検証
     public function test_redirects_purchase_success_to_home() {
         $this->mock(CheckoutService::class, function (MockInterface $mock) {
             $mock->shouldReceive('completeOrderBySessionId')
@@ -207,7 +207,7 @@ class PurchasePaymentTest extends TestCase
         ]);
     }
 
-    // 【評価項目ID:16】未認証メールユーザーは購入・出品・マイページ・コメント・いいねの保護ルートへ入れないかを検証
+    // 【実装保全のため】未認証メールユーザーは購入・出品・マイページ・コメント・いいねの保護ルートへ入れないかを検証
     public function test_unverified_user_cannot_access_verified_routes() {
         $user = $this->createUser('unverified');
         $seller = $this->createVerifiedUser('seller');
