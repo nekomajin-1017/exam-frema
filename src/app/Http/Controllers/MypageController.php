@@ -35,11 +35,11 @@ class MypageController extends Controller
         return view('profile', compact('user', 'profile'));
     }
 
-    public function updateMyPageProfile(ProfileRequest $request, ProfileService $profiles)
+    public function updateMyPageProfile(ProfileRequest $request, ProfileService $profileService)
     {
         $user = Auth::user();
 
-        $profiles->upsert($user, [
+        $profileService->upsert($user, [
             'display_name' => $request->input('name'),
             'postal_code' => $request->input('postal_code'),
             'address' => $request->input('address'),

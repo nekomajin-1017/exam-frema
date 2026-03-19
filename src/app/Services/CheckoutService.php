@@ -51,7 +51,7 @@ class CheckoutService
     public function completeOrderBySessionId(
         string $sessionId,
         OrderService $orders,
-        ProfileService $profiles,
+        ProfileService $profileService,
         bool $forceCreateForKonbini = false
     ) {
         $stripeSecret = (string) config('services.stripe.secret');
@@ -74,7 +74,7 @@ class CheckoutService
         $item = Item::find($itemId);
         $buyer = $buyerId ? User::with('profile')->find($buyerId) : null;
         $profile = $buyer ? $buyer->profile : null;
-        if (! $item || ! $profile || ! $profiles->hasShippingAddress($profile)) {
+        if (! $item || ! $profile || ! $profileService->hasShippingAddress($profile)) {
             return;
         }
 

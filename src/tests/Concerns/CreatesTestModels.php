@@ -11,11 +11,6 @@ use Illuminate\Support\Facades\Hash;
 
 trait CreatesTestModels
 {
-    /**
-     * 商品のテストデータを作成し、引数で渡した属性だけを上書きして返す。
-     *
-     * @param array<string, mixed> $attributes
-     */
     protected function createItem(int $userId, string $name, array $attributes = []) {
         return Item::create(array_merge([
             'user_id' => $userId,
@@ -29,9 +24,6 @@ trait CreatesTestModels
         ], $attributes));
     }
 
-    /**
-     * メール未認証状態のユーザーを作成して返す。
-     */
     protected function createUser(string $name) {
         return User::create([
             'name' => $name,
@@ -40,9 +32,6 @@ trait CreatesTestModels
         ]);
     }
 
-    /**
-     * メール認証日時を設定した認証済みユーザーを作成して返す。
-     */
     protected function createVerifiedUser(string $name) {
         $user = $this->createUser($name);
         $user->email_verified_at = now();
@@ -51,9 +40,6 @@ trait CreatesTestModels
         return $user;
     }
 
-    /**
-     * 指定ユーザーに紐づくプロフィールを作成し、未指定項目は既定値で補完する。
-     */
     protected function createProfile(
         int $userId,
         ?string $imagePath = null,
@@ -72,9 +58,6 @@ trait CreatesTestModels
         ]);
     }
 
-    /**
-     * 支払い方法マスタのテストデータを作成して返す。
-     */
     protected function createPayment(
         string $name = Payment::NAME_CARD,
         string $type = Payment::TYPE_CARD

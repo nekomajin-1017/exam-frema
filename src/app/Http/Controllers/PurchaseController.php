@@ -14,14 +14,14 @@ use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
 {
-    public function showPurchase(Item $item, CheckoutService $checkout, ProfileService $profiles)
+    public function showPurchase(Item $item, CheckoutService $checkout, ProfileService $profileService)
     {
         if ($redirect = $this->redirectIfNotPurchasable($item)) {
             return $redirect;
         }
 
         $profile = Auth::user()->profile;
-        $hasShippingAddress = $profiles->hasShippingAddress($profile);
+        $hasShippingAddress = $profileService->hasShippingAddress($profile);
         $paymentMethods = $checkout->resolvePaymentSelection();
 
         return view('purchase', compact('item', 'profile', 'hasShippingAddress', 'paymentMethods'));
@@ -43,7 +43,7 @@ class PurchaseController extends Controller
         Item $item,
         OrderService $orders,
         CheckoutService $checkout,
-        ProfileService $profiles
+        ProfileService $profileService
     ) {
         if ($redirect = $this->redirectIfNotPurchasable($item)) {
             return $redirect;
@@ -51,7 +51,7 @@ class PurchaseController extends Controller
 
         $user = Auth::user();
         $profile = $user->profile;
-        if (!$profile || !$profiles->hasShippingAddress($profile)) {
+        if (!$profile || !$profileService->hasShippingAddress($profile)) {
             return redirect()->route('purchase.address', $item);
         }
 
@@ -76,7 +76,7 @@ class PurchaseController extends Controller
     public function handlePurchaseSuccess(
         Request $request,
         OrderService $orders,
-        ProfileService $profiles,
+        ProfileService $profileService,
         CheckoutService $checkout
     )
     {
@@ -85,7 +85,7 @@ class PurchaseController extends Controller
             return redirect()->route('home');
         }
 
-        $checkout->completeOrderBySessionId($sessionId, $orders, $profiles, true);
+        $checkout->completeOrderBySessionId($sessionId, $orders, $profileService, true);
 
         return redirect()->route('home');
     }
@@ -100,11 +100,11 @@ class PurchaseController extends Controller
         return redirect()->route('home');
     }
 
-    public function storePurchaseAddress(AddressRequest $request, Item $item, ProfileService $profiles)
+    public function storePurchaseAddress(AddressRequest $request, Item $item, ProfileService $profileService)
     {
         $user = Auth::user();
 
-        $profiles->upsert($user, [
+        $profileService->upsert($user, [
             'display_name' => $user->name,
             'postal_code' => $request->input('postal_code'),
             'address' => $request->input('address'),
